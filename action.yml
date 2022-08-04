@@ -8,21 +8,6 @@ inputs:
   GITHUB_TOKEN:
     description: "GitHub token"
     required: true
-  VALID_DIRECTORY:
-    description: "Valid directory to lint"
-    required: false
-  VALID_MARKDOWN_EXTENSIONS:
-    description: "Valid markdown extensions"
-    required: false
-  VALID_IMAGE_EXTENSIONS:
-    description: "Valid image extensions"
-    required: false
-  REQUIRED_FRONTMATTER:
-    description: "Required frontmatter"
-    required: false
-  DEBUG:
-    description: "Debug mode"
-    required: false
 
 runs:
   using: "node16"
