@@ -1,0 +1,38 @@
+{
+  "name": "flinter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ncc run dist/index.js",
+    "build": "ncc build src/index.ts -o dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackDevAU/Flinter.git"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JackDevAU/Flinter/issues"
+  },
+  "homepage": "https://github.com/JackDevAU/Flinter#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^5.0.3",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@octokit/types": "^6.41.0",
+    "@types/node": "^18.6.1",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "@vercel/ncc": "^0.34.0",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "typescript": "^4.7.4"
+  }
+}

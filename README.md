@@ -1,29 +1,101 @@
-# A GitHub Repo template
+# Flinter
 
-A barebones template for any repository!
+## Build locally
 
-Provides: labels, GitHub Issue templates and Document templates for all your future needs!
+1. Install packages
 
-Don't forget to add a **.gitignore** and a **License**!!
+```bash
+yarn install
+```
 
-## Setup (Optional) - Add labels
+1. Build with ncc
 
-### Prerequisites
+```bash
+yarn build
+```
 
-This step requires: [Labeler](https://github.com/Zebiano/Labeler)
+Currently, as this is built using TS we need to run `yarn build` before pushing.
 
-Install it with:
+## Flinter Config Fields
 
-    npm install --global labeler
+To use this GitHub action, you'll need to create a `.flinter/config.json` file. See the below table for information.
 
-Then run to find the file location:
+### Defaults
 
-    labeler -p
+Put these fields inside a `defaults` section
 
-Replace the `labeler_labels.json` at that location with our copy in `./github/LABEL_TEMPLATE/labeler_labels.json`
+| Field                    | Type           | Required | Information                                                                                                                                     |
+| ------------------------ | -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markdownFileExtensions` | Array          | ✅       | A list of markdown file extensions to lint against                                                                                              |
+| `frontmatter`            | Array<Objects> | ✅       | A list of all fields to lint. If you add `directories` these fields won't be checked. See below for more information on the frontmatter object. |
+| `debug`                  | Boolean        | ❌       | Enable to see more logs                                                                                                                         |
+| `directories`            | Array          | ❌       | If you have a specific directories where you only want to lint against those specific markdown files.                                           |
 
-You'll need your Github Personal Access Token for the next step which can be found [here](https://github.com/settings/tokens)
+### Frontmatter Object
 
-Then run the command:
+| Field      | Type    | Required | Information                                        |
+| ---------- | ------- | -------- | -------------------------------------------------- |
+| `field`    | String  | ✅       | The name of the frontmatter field to lint          |
+| `required` | Boolean | ❌       | If true, will return an error if the value is null |
+| `type`     | String  | ❌       | TODO: Implement basic type checking                |
+| `rule`     | String  | ❌       | name of the custom rule to run. e.g. "custom.js"   |
 
-    labeler -t [GITHUB_PERSONAL_ACCESS_TOKEN] -o [USER/ORGANISATION] -r [REPOSITORY_NAME] -duf
+### Writing custom rules
+
+To write custom rules.
+
+1. Create a new folder `./flinter/linters/`
+1. Create a `.js` file and export an async function called `run`. See the template below.
+1. Return a FlinterResult [Boolean,String]
+1. Add the file name to the Frontmatter field's `rule`.
+
+```js
+// This must return a boolean value.
+
+/**
+ * @param {{field: string, value?: string}} params
+ * @returns {{result: boolean, error?: string}}
+ */
+export async function run(params) {
+  return {
+    result: true,
+  };
+}
+```
+
+### Example Config.json
+
+```json
+{
+  "defaults": {
+    "markdownFileExtensions": ["md", "mdx"],
+    "debug": true,
+    "frontmatter": [
+      {
+        "field": "title",
+        "type": "text",
+        "required": true
+      }
+    ]
+  },
+  "rules": {
+    "frontmatter": [
+      {
+        "field": "title",
+        "type": "text",
+        "required": true,
+        "rule": "title.js"
+      },
+      {
+        "field": "authors",
+        "type": "object",
+        "rule": "authors.js"
+      }
+    ]
+  }
+}
+```
+
+## Acknowledgements
+
+This builds on from the awesome work over @ [lint-md-fm](https://github.com/timhagn/lint-md-fm).

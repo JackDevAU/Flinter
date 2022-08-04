@@ -1,0 +1,28 @@
+{
+  "defaults": {
+    "markdownFileExtensions": ["md", "mdx"],
+    "debug": true,
+    "frontmatter": [
+      {
+        "field": "title",
+        "type": "text",
+        "required": true
+      }
+    ]
+  },
+  "rules": {
+    "frontmatter": [
+      {
+        "field": "title",
+        "type": "text",
+        "required": true,
+        "rule": "title.js"
+      },
+      {
+        "field": "authors",
+        "type": "object",
+        "rule": "authors.js"
+      }
+    ]
+  }
+}
