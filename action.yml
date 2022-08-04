@@ -1,4 +1,6 @@
-name: "Flinter"
+name: "Flinter.md"
+icon: "align-justify"
+color: "red"
 description: "A customizable Markdown Frontmatter linter"
 author: "JackDevAU"
 
