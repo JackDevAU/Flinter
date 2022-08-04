@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "MarkdownFileExtensions": ["md", "mdx"]
+  },
+  "frontmatter": [
+    {
+      "field": "title",
+      "type": "string",
+      "rule": "title.lint.js"
+    },
+    {
+      "field": "date",
+      "type": "string",
+      "required": true
+    }
+  ]
+}
