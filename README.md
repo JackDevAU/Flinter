@@ -8,7 +8,7 @@
 yarn install
 ```
 
-1. Build with ncc
+2. Build with ncc
 
 ```bash
 yarn build
