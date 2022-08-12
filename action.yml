@@ -1,13 +1,18 @@
 name: "Flinter.md"
-icon: "align-justify"
-color: "red"
 description: "A customizable Markdown Frontmatter linter"
 author: "JackDevAU"
+branding:
+  icon: "align-justify"
+  color: "red"
 
 inputs:
   GITHUB_TOKEN:
     description: "GitHub token"
     required: true
+  DEBUG:
+    description: "Debug logging"
+    required: false
+    default: "false"
 
 runs:
   using: "node16"
