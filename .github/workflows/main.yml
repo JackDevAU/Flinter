@@ -15,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Flint
-        uses: ./
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEBUG: true
+      # - name: Flint
+      #   uses: ./
+      #   with:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     DEBUG: true
 
       - name: Generate list using Markdown
         run: |
