@@ -179,18 +179,18 @@ async function PrintOutput(output: IFlintError): Promise<void> {
 }
 
 async function PrintSummary(output: IFlintError): Promise<void> {
-  summary.addHeading('Flint Results');
+  summary.addHeading('Flint Results').write();
 
   // output.errors.forEach(err => {
 
   // });
-  summary.addTable([
-    [{ data: 'File', header: true }, { data: 'Result', header: true }],
-    ['foo.js', 'Pass '],
-    ['bar.js', 'Fail '],
-    ['test.js', 'Pass ']
-  ])
+  // summary.addTable([
+  //   [{ data: 'File', header: true }, { data: 'Result', header: true }],
+  //   ['foo.js', 'Pass '],
+  //   ['bar.js', 'Fail '],
+  //   ['test.js', 'Pass ']
+  // ])
 
 
-  summary.write();
+  // summary.write();
 }
