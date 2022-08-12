@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Flutter.md"
-        uses: ./Flinter
+      - name: Flint
+        uses: ./Flinter.md
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: true
