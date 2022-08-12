@@ -176,3 +176,7 @@ async function PrintOutput(output: IFlintError): Promise<void> {
     }
   }
 }
+
+function PrintSummary() {
+  
+}

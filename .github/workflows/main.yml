@@ -2,12 +2,12 @@ name: Flint content
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,9 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Flinter.md
-        uses: JackDevAU/Flinter@Alpha-v0.0.2
+      - name: "Flutter.md"
+        uses: ./Flinter
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: true
-
