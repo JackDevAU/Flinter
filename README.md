@@ -95,8 +95,8 @@ export async function run(params) {
 }
 ```
 
-> **Note**
-> To enable debug logging, set `DEBUG` to `true` where the Flinter action is used
+> **Note**  
+> To enable debug logging, set `DEBUG` to `true` where the Flinter action is used  
 > e.g.
 
 ```yml
