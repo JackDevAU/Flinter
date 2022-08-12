@@ -102,7 +102,7 @@ async function run() {
   const output = await CheckMarkdownFiles(files, config);
 
   await PrintOutput(output);
-  PrintSummary(output);
+  await PrintSummary(output);
 }
 
 process.on('unhandledRejection', handleError);
@@ -178,7 +178,7 @@ async function PrintOutput(output: IFlintError): Promise<void> {
   }
 }
 
-function PrintSummary(output: IFlintError): void {
+async function PrintSummary(output: IFlintError): Promise<void> {
   summary.addHeading('Flint Results');
 
   // output.errors.forEach(err => {
