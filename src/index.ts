@@ -192,5 +192,5 @@ function PrintSummary(output: IFlintError): void {
   ])
 
 
-    .write();
+  summary.write();
 }
