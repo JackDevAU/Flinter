@@ -98,15 +98,14 @@ export async function run(params) {
 > **Note**  
 > To enable debug logging, set `DEBUG` to `true` where the Flinter action is used  
 > e.g.
-
-```yml
-    steps:
-      - name: Flinter.md
-        uses: JackDevAU/Flinter@Alpha-v0.0.1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEBUG: true
-```
+> ```yml
+>     steps:
+>       - name: Flinter.md
+>         uses: JackDevAU/Flinter@Alpha-v0.0.1
+>         with:
+>           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+>           DEBUG: true
+> ```
 
 ## Acknowledgements
 
