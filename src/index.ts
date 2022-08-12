@@ -179,7 +179,7 @@ async function PrintOutput(output: IFlintError): Promise<void> {
 }
 
 async function PrintSummary(output: IFlintError): Promise<void> {
-  summary.addHeading('Flint Results').write();
+  await summary.addHeading('Flint Results').write();
 
   // output.errors.forEach(err => {
 
