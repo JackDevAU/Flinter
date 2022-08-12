@@ -1,4 +1,4 @@
-import { setFailed, notice, getInput, getMultilineInput } from '@actions/core';
+import { setFailed, notice, getInput, getMultilineInput, summary } from '@actions/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -102,6 +102,7 @@ async function run() {
   const output = await CheckMarkdownFiles(files, config);
 
   await PrintOutput(output);
+  PrintSummary(output);
 }
 
 process.on('unhandledRejection', handleError);
@@ -177,6 +178,19 @@ async function PrintOutput(output: IFlintError): Promise<void> {
   }
 }
 
-function PrintSummary() {
-  
+function PrintSummary(output: IFlintError): void {
+  summary.addHeading('Flint Results');
+
+  // output.errors.forEach(err => {
+
+  // });
+  summary.addTable([
+    [{ data: 'File', header: true }, { data: 'Result', header: true }],
+    ['foo.js', 'Pass '],
+    ['bar.js', 'Fail '],
+    ['test.js', 'Pass ']
+  ])
+
+
+    .write();
 }
