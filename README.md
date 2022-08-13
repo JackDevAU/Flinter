@@ -27,8 +27,7 @@ Put these fields inside a `defaults` section
 | Field                    | Type           | Required | Information                                                                                                                                     |
 | ------------------------ | -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `markdownFileExtensions` | Array          | ✅       | A list of markdown file extensions to lint against                                                                                              |
-| `frontmatter`            | Array<Objects> | ✅       | A list of all fields to lint. If you add `directories` these fields won't be checked. See below for more information on the frontmatter object. |
-| `debug`                  | Boolean        | ❌       | Enable to see more logs                                                                                                                         |
+| `frontmatter`            | Array<Objects> | ✅       | A list of all fields to lint. If you add `directories` these fields won't be checked. See below for more information on the frontmatter object. |                                                                                                                     |
 | `directories`            | Array          | ❌       | If you have a specific directories where you only want to lint against those specific markdown files.                                           |
 
 ### Frontmatter Object
