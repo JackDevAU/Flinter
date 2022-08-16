@@ -18,9 +18,9 @@ yarn build
 
 Currently, as this is built using TS we need to run `yarn build` before pushing.
 
-## Flinter Config Fields
+## Getting Started
 
-To use this GitHub action, you'll need to create a `.flinter/config.json` file. See the below table for information.
+To use this GitHub action, you'll need to create a `.flinter/config.json` file. See the below table for information. (Scroll a bit further for an example `config.json`)
 
 ### Defaults
 
