@@ -1,5 +1,7 @@
 # Flinter
 
+A GitHub Action that lints the frontmatter of markdown files. Write your own rules in `js` or just stick with the defaults for a quick and easy solution. 
+
 ## Build locally
 
 1. Install packages
