@@ -14223,9 +14223,9 @@ async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
     var tableArray = [];
     tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
-    output.errors.forEach(err => {
-        tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
-    });
+    // output.errors.forEach(err => {
+    //   tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
+    // });
     core_1.summary.addTable(tableArray);
     await core_1.summary.write();
 }
