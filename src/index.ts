@@ -170,6 +170,10 @@ async function CheckMarkdownFiles(
 }
 
 async function PrintOutput(output: IFlintResults): Promise<void> {
+  console.log('ALL RESULTST');
+
+  console.log(output);
+
   var errs = output.errors.filter((err) => { !err.result });
   if (errs.length > 0) {
     setFailed(`errors found: ${output.errors.length}`);

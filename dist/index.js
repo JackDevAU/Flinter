@@ -14211,6 +14211,8 @@ async function CheckMarkdownFiles(files, config) {
     return output;
 }
 async function PrintOutput(output) {
+    console.log('ALL RESULTST');
+    console.log(output);
     var errs = output.errors.filter((err) => { !err.result; });
     if (errs.length > 0) {
         (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
