@@ -101,7 +101,7 @@ async function run() {
   }
   const output = await CheckMarkdownFiles(files, config);
 
-  await PrintOutput(output);
+  // await PrintOutput(output);
   await PrintSummary(output);
 }
 
