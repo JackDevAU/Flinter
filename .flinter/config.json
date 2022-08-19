@@ -47,6 +47,11 @@
                 "required": false
             },
             {
+                "field": "guid",
+                "type": "text",
+                "required": false
+            },
+            {
                 "field": "authors",
                 "type": "object",
                 "rule": "authors.js"
