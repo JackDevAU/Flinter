@@ -1,47 +1,6 @@
 import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
 /******/ var __webpack_modules__ = ({
 
-/***/ 551:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var map = {
-	"./authors": [
-		996,
-		996
-	],
-	"./authors.js": [
-		996,
-		996
-	],
-	"./title": [
-		4613,
-		613
-	],
-	"./title.js": [
-		4613,
-		613
-	]
-};
-function webpackAsyncContext(req) {
-	if(!__nccwpck_require__.o(map, req)) {
-		return Promise.resolve().then(() => {
-			var e = new Error("Cannot find module '" + req + "'");
-			e.code = 'MODULE_NOT_FOUND';
-			throw e;
-		});
-	}
-
-	var ids = map[req], id = ids[0];
-	return __nccwpck_require__.e(ids[1]).then(() => {
-		return __nccwpck_require__(id);
-	});
-}
-webpackAsyncContext.keys = () => (Object.keys(map));
-webpackAsyncContext.id = 551;
-module.exports = webpackAsyncContext;
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -13941,6 +13900,484 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 1132:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+
+// MIT License
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(2186);
+const github_1 = __nccwpck_require__(5438);
+const helpers_1 = __nccwpck_require__(3015);
+const _1 = __nccwpck_require__(6144);
+/**
+ * Returns a list of changed files.
+ */
+const getChangedFiles = async ({ reporter, repoToken, }) => {
+    try {
+        // Do we have an existing reporter?
+        let octokit;
+        if (!reporter) {
+            octokit = (0, helpers_1.default)({ token: repoToken });
+        }
+        else {
+            octokit = reporter;
+        }
+        const { eventName } = github_1.context;
+        // Define the base and head commits to be extracted from the payload.
+        let base;
+        let head;
+        switch (eventName) {
+            case 'pull_request':
+            case 'pull_request_target':
+                base = github_1.context?.payload?.pull_request?.base.sha;
+                head = github_1.context?.payload?.pull_request?.head.sha;
+                break;
+            case 'push':
+                base = github_1.context.payload.before;
+                head = github_1.context.payload.after;
+                break;
+            default:
+                (0, core_1.setFailed)(`This action only supports pull requests and pushes, ${github_1.context.eventName} events are not supported. ` +
+                    "Please submit an issue on this action's GitHub repo if you believe this in correct.");
+        }
+        // Ensure that the base and head properties are set on the payload.
+        if (!base || !head) {
+            (0, core_1.warning)(`The base or head commits are missing from the payload for this ${github_1.context.eventName} event. ` +
+                "Please submit an issue on this action's GitHub repo.");
+            base = '';
+            head = '';
+        }
+        const basehead = `${base}...${head}`;
+        // Use GitHub's compare two commits API.
+        // https://developer.github.com/v3/repos/commits/#compare-two-commits
+        const response = await octokit.rest.repos.compareCommitsWithBasehead({
+            owner: github_1.context.repo.owner,
+            repo: github_1.context.repo.repo,
+            basehead,
+        });
+        // Ensure that the request was successful.
+        if (response.status !== 200) {
+            (0, core_1.warning)(`The GitHub API for comparing the base and head commits for this ${github_1.context.eventName} event returned ${response.status}, expected 200. ` +
+                "Please submit an issue on this action's GitHub repo.");
+        }
+        // Ensure that the head commit is ahead of the base commit.
+        if (response.data.status !== 'ahead') {
+            (0, core_1.warning)(`The head commit for this ${github_1.context.eventName} event is not ahead of the base commit. ` +
+                "Please submit an issue on this action's GitHub repo.");
+        }
+        const { files } = response.data;
+        if (!files) {
+            (0, core_1.warning)(`The GitHub API for comparing the base and head commits for this ${github_1.context.eventName} event returned no files. `);
+            return undefined;
+        }
+        const all = [];
+        const added = [];
+        const modified = [];
+        const removed = [];
+        const renamed = [];
+        const addedModified = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const file of files) {
+            const { filename } = file;
+            // Prevent accidentally adding files from history folder.
+            if (filename.includes('.history')) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+            all.push(filename);
+            switch (file.status) {
+                case 'added':
+                    added.push(filename);
+                    addedModified.push(filename);
+                    break;
+                case 'modified':
+                    modified.push(filename);
+                    addedModified.push(filename);
+                    break;
+                case 'removed':
+                    removed.push(filename);
+                    break;
+                case 'renamed':
+                    renamed.push(filename);
+                    break;
+                default:
+                    (0, core_1.setFailed)(`One of your files includes an unsupported file status '${file.status}', expected 'added', 'modified', 'removed', or 'renamed'.`);
+            }
+        }
+        const allFormatted = all.join(',');
+        const addedFormatted = added.join(',');
+        const modifiedFormatted = modified.join(',');
+        const removedFormatted = removed.join(',');
+        const renamedFormatted = renamed.join(',');
+        const addedModifiedFormatted = addedModified.join(',');
+        const allFiles = files;
+        // Log the output values.
+        if (_1.DEBUG) {
+            (0, core_1.info)(`All: ${allFormatted}`);
+            (0, core_1.info)(`Added: ${addedFormatted}`);
+            (0, core_1.info)(`Modified: ${modifiedFormatted}`);
+            (0, core_1.info)(`Removed: ${removedFormatted}`);
+            (0, core_1.info)(`Renamed: ${renamedFormatted}`);
+            (0, core_1.info)(`Added or modified: ${addedModifiedFormatted}`);
+        }
+        return {
+            allFormattedFiles: allFormatted,
+            addedFormatted,
+            modifiedFormatted,
+            removedFormatted,
+            renamedFormatted,
+            addedModifiedFormatted,
+            allFiles,
+        };
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            (0, core_1.notice)(err.message);
+        }
+    }
+};
+exports["default"] = getChangedFiles;
+
+
+/***/ }),
+
+/***/ 9042:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DEFAULT_VALID_IMAGE_EXTENSIONS = exports.DEFAULT_VALID_MARKDOWN_EXTENSIONS = void 0;
+const DEFAULT_VALID_MARKDOWN_EXTENSIONS = ['.md', '.mdx'];
+exports.DEFAULT_VALID_MARKDOWN_EXTENSIONS = DEFAULT_VALID_MARKDOWN_EXTENSIONS;
+const DEFAULT_VALID_IMAGE_EXTENSIONS = ['.svg', '.png', '.jpg', '.jpeg'];
+exports.DEFAULT_VALID_IMAGE_EXTENSIONS = DEFAULT_VALID_IMAGE_EXTENSIONS;
+
+
+/***/ }),
+
+/***/ 3015:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github_1 = __nccwpck_require__(5438);
+const _1 = __nccwpck_require__(6144);
+const initOctokit = ({ token }) => {
+    const opts = {};
+    if (_1.DEBUG)
+        opts.log = console;
+    return (0, github_1.getOctokit)(token, opts);
+};
+exports["default"] = initOctokit;
+
+
+/***/ }),
+
+/***/ 6144:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DEBUG = void 0;
+const core_1 = __nccwpck_require__(2186);
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+const constants_1 = __nccwpck_require__(9042);
+const changedFiles_1 = __nccwpck_require__(1132);
+const helpers_1 = __nccwpck_require__(3015);
+const linter_1 = __nccwpck_require__(4756);
+const handleError = (error) => {
+    console.error(error);
+    (0, core_1.setFailed)(`Unhandled error: ${error}`);
+};
+exports.DEBUG = (0, core_1.getInput)('DEBUG') === 'true';
+// TODO: Tidy this up!
+async function run() {
+    //                              .-----.
+    //                             /7  .  (
+    //                            /   .-.  \
+    //                           /   /   \  \
+    //                          / `  )   (   )
+    //                         / `   )   ).  \
+    //                       .'  _.   \_/  . |
+    //      .--.           .' _.' )`.        |
+    //     (    `---...._.'   `---.'_)    ..  \
+    //      \            `----....___    `. \  |
+    //       `.           _ ----- _   `._  )/  |
+    //         `.       /"  \   /"  \`.  `._   |
+    //           `.    ((O)` ) ((O)` ) `.   `._\
+    //             `-- '`---'   `---' )  `.    `-.
+    //                /                  ` \      `-.
+    //              .'                      `.       `.
+    //             /                     `  ` `.       `-.
+    //      .--.   \ ===._____.======. `    `   `. .___.--`     .''''.
+    //     ' .` `-. `.                )`. `   ` ` \          .' . '  8)
+    //    (8  .  ` `-.`.               ( .  ` `  .`\      .'  '    ' /
+    //     \  `. `    `-.               ) ` .   ` ` \  .'   ' .  '  /
+    //      \ ` `.  ` . \`.    .--.     |  ` ) `   .``/   '  // .  /
+    //       `.  ``. .   \ \   .-- `.  (  ` /_   ` . / ' .  '/   .'
+    //         `. ` \  `  \ \  '-.   `-'  .'  `-.  `   .  .'/  .'
+    //           \ `.`.  ` \ \    ) /`._.`       `.  ` .  .'  /
+    //     LGB    |  `.`. . \ \  (.'               `.   .'  .'
+    //         __/  .. \ \ ` ) \                     \.' .. \__
+    //  .-._.-'     '"  ) .-'   `.                   (  '"     `-._.--.
+    // (_________.-====' / .' /\_)`--..__________..-- `====-. _________)
+    //                  (.'(.'
+    let config;
+    // Get the .flinter/config.json file
+    try {
+        const configPath = path.join(process.env.GITHUB_WORKSPACE ?? `${process.cwd()}`, '/.flinter/config.json');
+        config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            handleError(err);
+        }
+        return;
+    }
+    // get inputs
+    const repoToken = (0, core_1.getInput)('GITHUB_TOKEN', { required: true });
+    // Get the directories array from input. The first element is the projects markdown directory and the second one is the images one.
+    const directory = (0, core_1.getInput)('VALID_DIRECTORY');
+    let markdownExtensions = (0, core_1.getMultilineInput)('VALID_MARKDOWN_EXTENSIONS');
+    if (markdownExtensions.length < 1) {
+        markdownExtensions = constants_1.DEFAULT_VALID_MARKDOWN_EXTENSIONS;
+    }
+    const imageExtensions = (0, core_1.getInput)('VALID_IMAGE_EXTENSIONS') || constants_1.DEFAULT_VALID_IMAGE_EXTENSIONS;
+    const frontmatterFields = (0, core_1.getMultilineInput)('REQUIRED_FRONTMATTER');
+    // Create a octokit reporter.
+    const reporter = (0, helpers_1.default)({ token: repoToken });
+    // get changed Files
+    const changedFiles = await (0, changedFiles_1.default)({
+        reporter,
+        repoToken,
+    });
+    const files = await FindFiles(changedFiles, directory, markdownExtensions);
+    if (!files) {
+        (0, core_1.notice)(`No files found.`);
+        return;
+    }
+    const output = await CheckMarkdownFiles(files, config);
+    // await PrintOutput(output);
+    await PrintSummary(output);
+}
+process.on('unhandledRejection', handleError);
+run().catch(handleError);
+async function FindFiles(changedFiles, directory, markdownExtensions) {
+    const output = [];
+    if (!changedFiles) {
+        (0, core_1.notice)('No changed files found.');
+        return;
+    }
+    const { allFiles } = changedFiles;
+    if (!allFiles) {
+        (0, core_1.notice)('No valid changed files found.');
+        return;
+    }
+    for await (const file of allFiles) {
+        const { filename } = file;
+        if (filename.includes(directory)) {
+            const extension = path.extname(filename);
+            if (markdownExtensions.includes(extension)) {
+                output.push(filename);
+            }
+        }
+    }
+    return output;
+}
+async function CheckMarkdownFiles(files, config) {
+    const output = {
+        errors: [],
+    };
+    for await (const fileName of files) {
+        // Check files with valid markdown extensions only.
+        const markdownData = fs.readFileSync(fileName, 'utf8'); // Read markdown content from the file.
+        const markdownResult = await (0, linter_1.default)({
+            markdown: markdownData,
+            fileName,
+            config,
+        });
+        // for (const result of markdownResult) {
+        //   const { error } = result;
+        //   if (error) {
+        //     output.errors.push(result);
+        //   }
+        // }
+    }
+    return output;
+}
+async function PrintOutput(output) {
+    if (output.errors.length > 0) {
+        (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
+        for (const error of output.errors) {
+            (0, core_1.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
+        }
+    }
+}
+async function PrintSummary(output) {
+    console.log("Printing Summary");
+    await core_1.summary.addHeading('Flint Results').addRaw('some test text').write();
+    // output.errors.forEach(err => {
+    // });
+    // summary.addTable([
+    //   [{ data: 'File', header: true }, { data: 'Result', header: true }],
+    //   ['foo.js', 'Pass '],
+    //   ['bar.js', 'Fail '],
+    //   ['test.js', 'Pass ']
+    // ])
+    // summary.write();
+}
+
+
+/***/ }),
+
+/***/ 4756:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(2186);
+const matter = __nccwpck_require__(5382);
+const _1 = __nccwpck_require__(6144);
+// TODO: Clean this step up...
+const lintFrontmatter = async ({ markdown, config, fileName, }) => {
+    const output = [];
+    let index = 0;
+    try {
+        const frontmatter = matter(markdown).data;
+        if (frontmatter) {
+            for (const field in frontmatter) {
+                if (_1.DEBUG) {
+                    (0, core_1.notice)(`Flinting frontmatter ${field} in ${fileName}`);
+                }
+                if (config.defaults.directories) {
+                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter, index);
+                    if (res) {
+                        output.push(...res);
+                    }
+                }
+                else {
+                    const res = await flintDefault(markdown, config, field, fileName, frontmatter);
+                    if (res) {
+                        output.push(...res);
+                    }
+                }
+                index += 1;
+            }
+        }
+    }
+    catch (e) {
+        if (_1.DEBUG) {
+            console.log(e);
+        }
+    }
+    return output;
+};
+async function flintCustom(markdown, config, directories, field, fileName, frontmatter, index) {
+    for (const dir of directories) {
+        try {
+            if (_1.DEBUG) {
+                console.log(`Checking ${dir}/${field}`);
+            }
+            const ruleSetting = config[dir];
+            const currentRule = ruleSetting.frontmatter[index];
+            return await flint({
+                markdown,
+                config,
+                content: { field, value: frontmatter[field] },
+                rule: currentRule,
+                fileName,
+            });
+        }
+        catch (err) {
+            if (_1.DEBUG) {
+                (0, core_1.setFailed)(`Missing directory: ${field}`);
+            }
+        }
+    }
+}
+async function flintDefault(markdown, config, field, fileName, frontmatter) {
+    for await (const rule of config.defaults.frontmatter) {
+        return await flint({
+            markdown,
+            config,
+            content: { field, value: frontmatter[field] },
+            rule,
+            fileName,
+        });
+    }
+}
+const flint = async (props) => {
+    const result = [];
+    // Check if the frontmatter is valid
+    const fieldResult = flintField(props);
+    fieldResult.fileName = props.fileName;
+    result.push(fieldResult);
+    // Check if the frontmatter value is of the correct type
+    const typeResult = flintType(props);
+    typeResult.fileName = props.fileName;
+    result.push(typeResult);
+    // Runs a custom rule on the frontmatter
+    const customRule = await flintRule(props);
+    customRule.fileName = props.fileName;
+    result.push(customRule);
+    return result;
+};
+// Checks if the frontmatter contains the required field
+const flintField = (props) => {
+    const { content, rule } = props;
+    const { field } = content;
+    const { required } = rule;
+    if (_1.DEBUG) {
+        console.log(`Checking if ${field} is required`);
+    }
+    if (required && !content.value) {
+        return {
+            result: false,
+            error: `Missing required frontmatter field: ${field}`,
+        };
+    }
+    return {
+        result: true,
+    };
+};
+// TODO: Implement this
+// Checks if the frontmatter value is of the correct type
+const flintType = (props) => {
+    const { content, rule } = props;
+    const { type } = rule;
+    if (_1.DEBUG) {
+        console.log(`Checking if ${content.field} is of type ${type}`);
+    }
+    return {
+        result: true,
+    };
+};
+// Runs a custom rule on the frontmatter
+const flintRule = async (props) => {
+    const { content, rule } = props;
+    const { rule: ruleName } = rule;
+    if (_1.DEBUG) {
+        console.log(`Running custom rule ${ruleName}`);
+    }
+    if (ruleName) {
+        const { run } = await Promise.resolve().then(() => require(`../.flinter/linters/${ruleName}`));
+        const { result, error } = await run(content);
+        return {
+            result,
+            error,
+        };
+    }
+    return {
+        result: true,
+    };
+};
+exports["default"] = lintFrontmatter;
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -14086,540 +14523,18 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	return module.exports;
 /******/ }
 /******/ 
-/******/ // expose the modules object (__webpack_modules__)
-/******/ __nccwpck_require__.m = __webpack_modules__;
-/******/ 
 /************************************************************************/
-/******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter functions for harmony exports
-/******/ 	__nccwpck_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 			}
-/******/ 		}
-/******/ 	};
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/ensure chunk */
-/******/ (() => {
-/******/ 	__nccwpck_require__.f = {};
-/******/ 	// This file contains only the entry chunk.
-/******/ 	// The chunk loading function for additional chunks
-/******/ 	__nccwpck_require__.e = (chunkId) => {
-/******/ 		return Promise.all(Object.keys(__nccwpck_require__.f).reduce((promises, key) => {
-/******/ 			__nccwpck_require__.f[key](chunkId, promises);
-/******/ 			return promises;
-/******/ 		}, []));
-/******/ 	};
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/get javascript chunk filename */
-/******/ (() => {
-/******/ 	// This function allow to reference async chunks
-/******/ 	__nccwpck_require__.u = (chunkId) => {
-/******/ 		// return url for filenames based on template
-/******/ 		return "" + chunkId + ".index.js";
-/******/ 	};
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
-/******/ 
-/******/ /* webpack/runtime/make namespace object */
-/******/ (() => {
-/******/ 	// define __esModule on exports
-/******/ 	__nccwpck_require__.r = (exports) => {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/ })();
-/******/ 
 /******/ /* webpack/runtime/compat */
 /******/ 
 /******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
 /******/ 
-/******/ /* webpack/runtime/import chunk loading */
-/******/ (() => {
-/******/ 	// no baseURI
-/******/ 	
-/******/ 	// object to store loaded and loading chunks
-/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 	// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 	var installedChunks = {
-/******/ 		179: 0
-/******/ 	};
-/******/ 	
-/******/ 	var installChunk = (data) => {
-/******/ 		var {ids, modules, runtime} = data;
-/******/ 		// add "modules" to the modules object,
-/******/ 		// then flag all "ids" as loaded and fire callback
-/******/ 		var moduleId, chunkId, i = 0;
-/******/ 		for(moduleId in modules) {
-/******/ 			if(__nccwpck_require__.o(modules, moduleId)) {
-/******/ 				__nccwpck_require__.m[moduleId] = modules[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(runtime) runtime(__nccwpck_require__);
-/******/ 		for(;i < ids.length; i++) {
-/******/ 			chunkId = ids[i];
-/******/ 			if(__nccwpck_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 				installedChunks[chunkId][0]();
-/******/ 			}
-/******/ 			installedChunks[ids[i]] = 0;
-/******/ 		}
-/******/ 	
-/******/ 	}
-/******/ 	
-/******/ 	__nccwpck_require__.f.j = (chunkId, promises) => {
-/******/ 			// import() chunk loading for javascript
-/******/ 			var installedChunkData = __nccwpck_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
-/******/ 			if(installedChunkData !== 0) { // 0 means "already installed".
-/******/ 	
-/******/ 				// a Promise means "currently loading".
-/******/ 				if(installedChunkData) {
-/******/ 					promises.push(installedChunkData[1]);
-/******/ 				} else {
-/******/ 					if(true) { // all chunks have JS
-/******/ 						// setup Promise in chunk cache
-/******/ 						var promise = import("./" + __nccwpck_require__.u(chunkId)).then(installChunk, (e) => {
-/******/ 							if(installedChunks[chunkId] !== 0) installedChunks[chunkId] = undefined;
-/******/ 							throw e;
-/******/ 						});
-/******/ 						var promise = Promise.race([promise, new Promise((resolve) => (installedChunkData = installedChunks[chunkId] = [resolve]))])
-/******/ 						promises.push(installedChunkData[1] = promise);
-/******/ 					} else installedChunks[chunkId] = 0;
-/******/ 				}
-/******/ 			}
-/******/ 	};
-/******/ 	
-/******/ 	// no external install chunk
-/******/ 	
-/******/ 	// no on chunks loaded
-/******/ })();
-/******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "e": () => (/* binding */ DEBUG)
-});
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(7147);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(1017);
-;// CONCATENATED MODULE: ./src/constants.ts
-const DEFAULT_VALID_MARKDOWN_EXTENSIONS = ['.md', '.mdx'];
-const DEFAULT_VALID_IMAGE_EXTENSIONS = ['.svg', '.png', '.jpg', '.jpeg'];
-
-
-// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
-var github = __nccwpck_require__(5438);
-;// CONCATENATED MODULE: ./src/helpers.ts
-
-
-const initOctokit = ({ token }) => {
-    const opts = {};
-    if (DEBUG)
-        opts.log = console;
-    return (0,github.getOctokit)(token, opts);
-};
-/* harmony default export */ const helpers = (initOctokit);
-
-;// CONCATENATED MODULE: ./src/changedFiles.ts
-// MIT License
-
-
-
-
-/**
- * Returns a list of changed files.
- */
-const getChangedFiles = async ({ reporter, repoToken, }) => {
-    try {
-        // Do we have an existing reporter?
-        let octokit;
-        if (!reporter) {
-            octokit = helpers({ token: repoToken });
-        }
-        else {
-            octokit = reporter;
-        }
-        const { eventName } = github.context;
-        // Define the base and head commits to be extracted from the payload.
-        let base;
-        let head;
-        switch (eventName) {
-            case 'pull_request':
-            case 'pull_request_target':
-                base = github.context.payload.pull_request.base.sha;
-                head = github.context.payload.pull_request.head.sha;
-                break;
-            case 'push':
-                base = github.context.payload.before;
-                head = github.context.payload.after;
-                break;
-            default:
-                (0,core.setFailed)(`This action only supports pull requests and pushes, ${github.context.eventName} events are not supported. ` +
-                    "Please submit an issue on this action's GitHub repo if you believe this in correct.");
-        }
-        // Ensure that the base and head properties are set on the payload.
-        if (!base || !head) {
-            (0,core.warning)(`The base or head commits are missing from the payload for this ${github.context.eventName} event. ` +
-                "Please submit an issue on this action's GitHub repo.");
-            base = '';
-            head = '';
-        }
-        const basehead = `${base}...${head}`;
-        // Use GitHub's compare two commits API.
-        // https://developer.github.com/v3/repos/commits/#compare-two-commits
-        const response = await octokit.rest.repos.compareCommitsWithBasehead({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            basehead,
-        });
-        // Ensure that the request was successful.
-        if (response.status !== 200) {
-            (0,core.warning)(`The GitHub API for comparing the base and head commits for this ${github.context.eventName} event returned ${response.status}, expected 200. ` +
-                "Please submit an issue on this action's GitHub repo.");
-        }
-        // Ensure that the head commit is ahead of the base commit.
-        if (response.data.status !== 'ahead') {
-            (0,core.warning)(`The head commit for this ${github.context.eventName} event is not ahead of the base commit. ` +
-                "Please submit an issue on this action's GitHub repo.");
-        }
-        const { files } = response.data;
-        if (!files) {
-            (0,core.warning)(`The GitHub API for comparing the base and head commits for this ${github.context.eventName} event returned no files. `);
-            return undefined;
-        }
-        const all = [];
-        const added = [];
-        const modified = [];
-        const removed = [];
-        const renamed = [];
-        const addedModified = [];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const file of files) {
-            const { filename } = file;
-            // Prevent accidentally adding files from history folder.
-            if (filename.includes('.history')) {
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            all.push(filename);
-            switch (file.status) {
-                case 'added':
-                    added.push(filename);
-                    addedModified.push(filename);
-                    break;
-                case 'modified':
-                    modified.push(filename);
-                    addedModified.push(filename);
-                    break;
-                case 'removed':
-                    removed.push(filename);
-                    break;
-                case 'renamed':
-                    renamed.push(filename);
-                    break;
-                default:
-                    (0,core.setFailed)(`One of your files includes an unsupported file status '${file.status}', expected 'added', 'modified', 'removed', or 'renamed'.`);
-            }
-        }
-        const allFormatted = all.join(',');
-        const addedFormatted = added.join(',');
-        const modifiedFormatted = modified.join(',');
-        const removedFormatted = removed.join(',');
-        const renamedFormatted = renamed.join(',');
-        const addedModifiedFormatted = addedModified.join(',');
-        const allFiles = files;
-        // Log the output values.
-        if (DEBUG) {
-            (0,core.info)(`All: ${allFormatted}`);
-            (0,core.info)(`Added: ${addedFormatted}`);
-            (0,core.info)(`Modified: ${modifiedFormatted}`);
-            (0,core.info)(`Removed: ${removedFormatted}`);
-            (0,core.info)(`Renamed: ${renamedFormatted}`);
-            (0,core.info)(`Added or modified: ${addedModifiedFormatted}`);
-        }
-        return {
-            allFormattedFiles: allFormatted,
-            addedFormatted,
-            modifiedFormatted,
-            removedFormatted,
-            renamedFormatted,
-            addedModifiedFormatted,
-            allFiles,
-        };
-    }
-    catch (err) {
-        if (err instanceof Error) {
-            (0,core.notice)(err.message);
-        }
-    }
-};
-/* harmony default export */ const src_changedFiles = (getChangedFiles);
-
-// EXTERNAL MODULE: ./node_modules/gray-matter/index.js
-var gray_matter = __nccwpck_require__(5382);
-;// CONCATENATED MODULE: ./src/linter.ts
-
-
-
-// TODO: Clean this step up...
-const lintFrontmatter = async ({ markdown, config, fileName, }) => {
-    const output = [];
-    let index = 0;
-    try {
-        const frontmatter = gray_matter(markdown).data;
-        if (frontmatter) {
-            for (const field in frontmatter) {
-                if (DEBUG) {
-                    (0,core.notice)(`Flinting frontmatter ${field} in ${fileName}`);
-                }
-                if (config.defaults.directories) {
-                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter, index);
-                    if (res) {
-                        output.push(...res);
-                    }
-                }
-                else {
-                    const res = await flintDefault(markdown, config, field, fileName, frontmatter);
-                    if (res) {
-                        output.push(...res);
-                    }
-                }
-                index += 1;
-            }
-        }
-    }
-    catch (e) {
-        if (DEBUG) {
-            console.log(e);
-        }
-    }
-    return output;
-};
-async function flintCustom(markdown, config, directories, field, fileName, frontmatter, index) {
-    for (const dir of directories) {
-        try {
-            if (DEBUG) {
-                console.log(`Checking ${dir}/${field}`);
-            }
-            const ruleSetting = config[dir];
-            const currentRule = ruleSetting.frontmatter[index];
-            return await flint({
-                markdown,
-                config,
-                content: { field, value: frontmatter[field] },
-                rule: currentRule,
-                fileName,
-            });
-        }
-        catch (err) {
-            if (DEBUG) {
-                (0,core.setFailed)(`Missing directory: ${field}`);
-            }
-        }
-    }
-}
-async function flintDefault(markdown, config, field, fileName, frontmatter) {
-    for await (const rule of config.defaults.frontmatter) {
-        return await flint({
-            markdown,
-            config,
-            content: { field, value: frontmatter[field] },
-            rule,
-            fileName,
-        });
-    }
-}
-const flint = async (props) => {
-    const result = [];
-    // Check if the frontmatter is valid
-    const fieldResult = flintField(props);
-    fieldResult.fileName = props.fileName;
-    result.push(fieldResult);
-    // Check if the frontmatter value is of the correct type
-    const typeResult = flintType(props);
-    typeResult.fileName = props.fileName;
-    result.push(typeResult);
-    // Runs a custom rule on the frontmatter
-    const customRule = await flintRule(props);
-    customRule.fileName = props.fileName;
-    result.push(customRule);
-    return result;
-};
-// Checks if the frontmatter contains the required field
-const flintField = (props) => {
-    const { content, rule } = props;
-    const { field } = content;
-    const { required } = rule;
-    if (DEBUG) {
-        console.log(`Checking if ${field} is required`);
-    }
-    if (required && !content.value) {
-        return {
-            result: false,
-            error: `Missing required frontmatter field: ${field}`,
-        };
-    }
-    return {
-        result: true,
-    };
-};
-// TODO: Implement this
-// Checks if the frontmatter value is of the correct type
-const flintType = (props) => {
-    const { content, rule } = props;
-    const { type } = rule;
-    if (DEBUG) {
-        console.log(`Checking if ${content.field} is of type ${type}`);
-    }
-    return {
-        result: true,
-    };
-};
-// Runs a custom rule on the frontmatter
-const flintRule = async (props) => {
-    const { content, rule } = props;
-    const { rule: ruleName } = rule;
-    if (DEBUG) {
-        console.log(`Running custom rule ${ruleName}`);
-    }
-    if (ruleName) {
-        const { run } = await __nccwpck_require__(551)(`./${ruleName}`);
-        const { result, error } = await run(content);
-        return {
-            result,
-            error,
-        };
-    }
-    return {
-        result: true,
-    };
-};
-/* harmony default export */ const linter = (lintFrontmatter);
-
-;// CONCATENATED MODULE: ./src/index.ts
-
-
-
-
-
-
-
-const handleError = (error) => {
-    console.error(error);
-    (0,core.setFailed)(`Unhandled error: ${error}`);
-};
-const DEBUG = (0,core.getInput)('DEBUG') === 'true';
-// TODO: Tidy this up!
-async function run() {
-    let config;
-    // Get the .flinter/config.json file
-    try {
-        const configPath = external_path_.join(process.env.GITHUB_WORKSPACE ?? `${process.cwd()}`, '/.flinter/config.json');
-        config = JSON.parse(external_fs_.readFileSync(configPath, 'utf8'));
-    }
-    catch (err) {
-        if (err instanceof Error) {
-            handleError(err);
-        }
-        return;
-    }
-    // get inputs
-    const repoToken = (0,core.getInput)('GITHUB_TOKEN', { required: true });
-    // Get the directories array from input. The first element is the projects markdown directory and the second one is the images one.
-    const directory = (0,core.getInput)('VALID_DIRECTORY');
-    let markdownExtensions = (0,core.getMultilineInput)('VALID_MARKDOWN_EXTENSIONS');
-    if (markdownExtensions.length < 1) {
-        markdownExtensions = DEFAULT_VALID_MARKDOWN_EXTENSIONS;
-    }
-    const imageExtensions = (0,core.getInput)('VALID_IMAGE_EXTENSIONS') || DEFAULT_VALID_IMAGE_EXTENSIONS;
-    const frontmatterFields = (0,core.getMultilineInput)('REQUIRED_FRONTMATTER');
-    // Create a octokit reporter.
-    const reporter = helpers({ token: repoToken });
-    // get changed Files
-    const changedFiles = await src_changedFiles({
-        reporter,
-        repoToken,
-    });
-    const files = await FindFiles(changedFiles, directory, markdownExtensions);
-    if (!files) {
-        (0,core.notice)(`No files found.`);
-        return;
-    }
-    const output = await CheckMarkdownFiles(files, config);
-    await PrintOutput(output);
-}
-process.on('unhandledRejection', handleError);
-run().catch(handleError);
-async function FindFiles(changedFiles, directory, markdownExtensions) {
-    const output = [];
-    if (!changedFiles) {
-        (0,core.notice)('No changed files found.');
-        return;
-    }
-    const { allFiles } = changedFiles;
-    if (!allFiles) {
-        (0,core.notice)('No valid changed files found.');
-        return;
-    }
-    for await (const file of allFiles) {
-        const { filename } = file;
-        if (filename.includes(directory)) {
-            const extension = external_path_.extname(filename);
-            if (markdownExtensions.includes(extension)) {
-                output.push(filename);
-            }
-        }
-    }
-    return output;
-}
-async function CheckMarkdownFiles(files, config) {
-    const output = {
-        errors: [],
-    };
-    for await (const fileName of files) {
-        // Check files with valid markdown extensions only.
-        const markdownData = external_fs_.readFileSync(fileName, 'utf8'); // Read markdown content from the file.
-        const markdownResult = await linter({
-            markdown: markdownData,
-            fileName,
-            config,
-        });
-        for (const result of markdownResult) {
-            const { error } = result;
-            if (error) {
-                output.errors.push(result);
-            }
-        }
-    }
-    return output;
-}
-async function PrintOutput(output) {
-    if (output.errors.length > 0) {
-        (0,core.setFailed)(`errors found: ${output.errors.length}`);
-        for (const error of output.errors) {
-            (0,core.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
-        }
-    }
-}
-
-})();
-
-var __webpack_exports__DEBUG = __webpack_exports__.e;
-export { __webpack_exports__DEBUG as DEBUG };
+/******/ 
+/******/ // startup
+/******/ // Load entry module and return exports
+/******/ // This entry module is referenced by other modules so it can't be inlined
+/******/ var __webpack_exports__ = __nccwpck_require__(6144);
+/******/ var __webpack_exports__DEBUG = __webpack_exports__.DEBUG;
+/******/ var __webpack_exports___esModule = __webpack_exports__.__esModule;
+/******/ export { __webpack_exports__DEBUG as DEBUG, __webpack_exports___esModule as __esModule };
+/******/ 
