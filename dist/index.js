@@ -14159,7 +14159,7 @@ async function run() {
         return;
     }
     const output = await CheckMarkdownFiles(files, config);
-    // await PrintOutput(output);
+    await PrintOutput(output);
     await PrintSummary(output);
 }
 process.on('unhandledRejection', handleError);
@@ -14198,12 +14198,12 @@ async function CheckMarkdownFiles(files, config) {
             fileName,
             config,
         });
-        // for (const result of markdownResult) {
-        //   const { error } = result;
-        //   if (error) {
-        //     output.errors.push(result);
-        //   }
-        // }
+        for (const result of markdownResult) {
+            const { error } = result;
+            if (error) {
+                output.errors.push(result);
+            }
+        }
     }
     return output;
 }
