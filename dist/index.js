@@ -14250,7 +14250,12 @@ async function PrintSummary(output) {
 /***/ 4756:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-
+function __ncc_wildcard$0 (arg) {
+  if (arg === "authors.js" || arg === "authors") return __nccwpck_require__(996);
+  else if (arg === "title.js" || arg === "title") return __nccwpck_require__(4613);
+  else if (arg === "uri.js" || arg === "uri") return __nccwpck_require__(6005);
+}
+"use strict";
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const matter = __nccwpck_require__(5382);
@@ -14297,6 +14302,8 @@ async function flintCustom(markdown, config, directories, field, fileName, front
             }
             const ruleSetting = config[dir];
             const currentRule = ruleSetting.frontmatter[index];
+            console.log(ruleSetting);
+            console.log(currentRule);
             return await flint({
                 markdown,
                 config,
@@ -14306,6 +14313,7 @@ async function flintCustom(markdown, config, directories, field, fileName, front
             });
         }
         catch (err) {
+            console.log(err);
             if (_1.DEBUG) {
                 (0, core_1.setFailed)(`Missing directory: ${field}`);
             }
@@ -14377,7 +14385,7 @@ const flintRule = async (props) => {
         console.log(`Running custom rule ${ruleName}`);
     }
     if (ruleName) {
-        const { run } = await Promise.resolve().then(() => require(`../.flinter/linters/${ruleName}`));
+        const { run } = await Promise.resolve().then(() => __ncc_wildcard$0(ruleName));
         const { result, error } = await run(content);
         return {
             result,
@@ -14499,6 +14507,92 @@ module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 
+/***/ 996:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "run": () => (/* binding */ run)
+/* harmony export */ });
+/**
+ * @param {{field: string, value?: string}} params
+ * @returns {{result: boolean, error?: string}}
+ */
+ async function run(params) {
+    return {
+      result: true,
+    };
+  }
+
+/***/ }),
+
+/***/ 4613:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "run": () => (/* binding */ run)
+/* harmony export */ });
+/**
+ * @param {{field: string, value?: string}} params
+ * @returns {{result: boolean, error?: string}}
+ */
+async function run(params) {
+  if (!params.value) {
+    return {
+      result: false,
+      error: "Title is required",
+    };
+  }
+
+  if (params.value ) {
+    
+  }
+
+  return {
+    result: true,
+  };
+}
+
+
+/***/ }),
+
+/***/ 6005:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "run": () => (/* binding */ run)
+/* harmony export */ });
+/**
+ * @param {{field: string, value?: string}} params
+ * @returns {{result: boolean, error?: string}}
+ */
+async function run(params) {
+  console.log("TEST CUSTOM RULE");
+  if (!params.value) {
+    return {
+      result: false,
+      error: "Uri is required",
+    };
+  }
+
+  var uriRegex = new RegExp("(?:($.*):)");
+  if (!uriRegex.test(params.value)) {
+    return {
+      result: false,
+      error: "Uri must be kebab case",
+    };
+  }
+
+  return {
+    result: true,
+  };
+}
+
+
+/***/ }),
+
 /***/ 2020:
 /***/ ((module) => {
 
@@ -14539,6 +14633,34 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ }
 /******/ 
 /************************************************************************/
+/******/ /* webpack/runtime/define property getters */
+/******/ (() => {
+/******/ 	// define getter functions for harmony exports
+/******/ 	__nccwpck_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			}
+/******/ 		}
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/hasOwnProperty shorthand */
+/******/ (() => {
+/******/ 	__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/make namespace object */
+/******/ (() => {
+/******/ 	// define __esModule on exports
+/******/ 	__nccwpck_require__.r = (exports) => {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/compat */
 /******/ 
 /******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
