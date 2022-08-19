@@ -1,0 +1,36 @@
+{
+    "defaults": {
+        "markdownFileExtensions": [
+            "md",
+            "mdx"
+        ],
+        "directories": [
+            "rules"
+        ]
+    },
+    "rules": {
+        "frontmatter": [
+            {
+                "field": "title",
+                "type": "text",
+                "required": true
+            },
+            {
+                "field": "uri",
+                "type": "text",
+                "required": true,
+                "rule": "uri.js"
+            },
+            {
+                "field": "authors",
+                "type": "object",
+                "rule": "authors.js"
+            },
+            {
+                "field": "archivedreason",
+                "type": "text",
+                "required": false
+            }
+        ]
+    }
+}
