@@ -170,16 +170,25 @@ async function CheckMarkdownFiles(
 }
 
 async function PrintOutput(output: IFlintResults): Promise<void> {
-  var errs = output.errors.every((err) => { !err.result });
-  if (output.errors.length > 0) {
+  var errs = output.errors.filter((err) => { !err.result });
+  if (errs.length > 0) {
     setFailed(`errors found: ${output.errors.length}`);
 
-    for (const error of output.errors) {
+    for (const error of errs) {
       setFailed(
         `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
       );
     }
   }
+  // if (output.errors.length > 0) {
+  //   setFailed(`errors found: ${output.errors.length}`);
+
+  //   for (const error of output.errors) {
+  //     setFailed(
+  //       `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
+  //     );
+  //   }
+  // }
 }
 
 async function PrintSummary(output: IFlintResults): Promise<void> {

@@ -14211,13 +14211,21 @@ async function CheckMarkdownFiles(files, config) {
     return output;
 }
 async function PrintOutput(output) {
-    var errs = output.errors.every((err) => { !err.result; });
-    if (output.errors.length > 0) {
+    var errs = output.errors.filter((err) => { !err.result; });
+    if (errs.length > 0) {
         (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
-        for (const error of output.errors) {
+        for (const error of errs) {
             (0, core_1.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
         }
     }
+    // if (output.errors.length > 0) {
+    //   setFailed(`errors found: ${output.errors.length}`);
+    //   for (const error of output.errors) {
+    //     setFailed(
+    //       `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
+    //     );
+    //   }
+    // }
 }
 async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
