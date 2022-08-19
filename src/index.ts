@@ -156,12 +156,12 @@ async function CheckMarkdownFiles(
       config,
     });
 
-    for (const result of markdownResult) {
-      const { error } = result;
-      if (error) {
-        output.errors.push(result);
-      }
-    }
+    // for (const result of markdownResult) {
+    //   const { error } = result;
+    //   if (error) {
+    //     output.errors.push(result);
+    //   }
+    // }
   }
   return output;
 }
