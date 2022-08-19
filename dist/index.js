@@ -14223,7 +14223,7 @@ async function PrintSummary(output) {
     tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
     console.log(tableArray);
     output.errors.forEach(err => {
-        tableArray.push([err.fileName, err.result, err.error]);
+        tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
     });
     core_1.summary.addTable(tableArray);
     core_1.summary.addTable([

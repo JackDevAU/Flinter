@@ -191,7 +191,7 @@ async function PrintSummary(output: IFlintError): Promise<void> {
   console.log(tableArray);
 
   output.errors.forEach(err => {
-    tableArray.push([err.fileName, err.result, err.error]);
+    tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
   });
   summary.addTable(tableArray);
 
