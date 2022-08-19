@@ -221,12 +221,19 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
   // Done!
 
   // Table for each file with errors
+
+  summary.addHeading('File Errors', 2);
+
   filesScanned.filter(f => !f.success).forEach(f => {
     var tableArray = [];
-    tableArray.push([{ data: 'File', header: true }, { data: 'Error Message', header: true }]);
-    output.errors.filter(e => e.fileName == f.fileName).forEach(err => {
+    summary.addHeading(f.fileName ?? '', 3);
+
+    tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+
+    output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
       tableArray.push([err.fileName, err.error ?? '']);
     });
+
     summary.addTable(tableArray);
   });
 

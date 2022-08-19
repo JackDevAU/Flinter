@@ -14248,10 +14248,12 @@ async function PrintSummary(output) {
     core_1.summary.addTable(summaryTableArray);
     // Done!
     // Table for each file with errors
+    core_1.summary.addHeading('File Errors', 2);
     filesScanned.filter(f => !f.success).forEach(f => {
         var tableArray = [];
-        tableArray.push([{ data: 'File', header: true }, { data: 'Error Message', header: true }]);
-        output.errors.filter(e => e.fileName == f.fileName).forEach(err => {
+        core_1.summary.addHeading(f.fileName ?? '', 3);
+        tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
             tableArray.push([err.fileName, err.error ?? '']);
         });
         core_1.summary.addTable(tableArray);
