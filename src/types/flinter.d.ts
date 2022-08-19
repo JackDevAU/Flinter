@@ -38,6 +38,6 @@ export type FlinterRuleObject = {
   value: any;
 };
 
-interface IFlintError {
+interface IFlintResults {
   errors: IFlinterResult[];
 }

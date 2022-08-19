@@ -14200,14 +14200,18 @@ async function CheckMarkdownFiles(files, config) {
         });
         for (const result of markdownResult) {
             const { error } = result;
-            if (error) {
-                output.errors.push(result);
-            }
+            console.log(result);
+            // if (error) {
+            //   output.errors.push(result);
+            // }
+            // always add results
+            output.errors.push(result);
         }
     }
     return output;
 }
 async function PrintOutput(output) {
+    var errs = output.errors.every((err) => { !err.result; });
     if (output.errors.length > 0) {
         (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
         for (const error of output.errors) {

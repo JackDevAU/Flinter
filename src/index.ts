@@ -10,7 +10,7 @@ import getChangedFiles, { IChangedFiles } from './changedFiles';
 import initOctokit from './helpers';
 import lintFrontmatter from './linter';
 import { Config } from './types/config';
-import { IFlintError } from './types/flinter';
+import { IFlintResults } from './types/flinter';
 
 const handleError = (error: Error) => {
   console.error(error);
@@ -142,8 +142,8 @@ async function FindFiles(
 async function CheckMarkdownFiles(
   files: string[],
   config: Config
-): Promise<IFlintError> {
-  const output: IFlintError = {
+): Promise<IFlintResults> {
+  const output: IFlintResults = {
     errors: [],
   };
 
@@ -158,15 +158,19 @@ async function CheckMarkdownFiles(
 
     for (const result of markdownResult) {
       const { error } = result;
-      if (error) {
-        output.errors.push(result);
-      }
+      console.log(result);
+      // if (error) {
+      //   output.errors.push(result);
+      // }
+      // always add results
+      output.errors.push(result);
     }
   }
   return output;
 }
 
-async function PrintOutput(output: IFlintError): Promise<void> {
+async function PrintOutput(output: IFlintResults): Promise<void> {
+  var errs = output.errors.every((err) => { !err.result });
   if (output.errors.length > 0) {
     setFailed(`errors found: ${output.errors.length}`);
 
@@ -178,7 +182,7 @@ async function PrintOutput(output: IFlintError): Promise<void> {
   }
 }
 
-async function PrintSummary(output: IFlintError): Promise<void> {
+async function PrintSummary(output: IFlintResults): Promise<void> {
   summary.addHeading('Flint Results');
 
   var tableArray = [];
