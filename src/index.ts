@@ -184,9 +184,17 @@ async function PrintSummary(output: IFlintError): Promise<void> {
   summary.addHeading('Flint Results');
 
   summary.addRaw('some test text');
+
+  var tableArray = [];
+
+  tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }]);
+  console.log(tableArray);
+
   // output.errors.forEach(err => {
 
   // });
+  summary.addTable(tableArray);
+
   summary.addTable([
     [{ data: 'File', header: true }, { data: 'Result', header: true }],
     ['foo.js', 'Pass '],

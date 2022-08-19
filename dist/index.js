@@ -14219,8 +14219,12 @@ async function PrintSummary(output) {
     console.log("Printing Summary");
     core_1.summary.addHeading('Flint Results');
     core_1.summary.addRaw('some test text');
+    var tableArray = [];
+    tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }]);
+    console.log(tableArray);
     // output.errors.forEach(err => {
     // });
+    core_1.summary.addTable(tableArray);
     core_1.summary.addTable([
         [{ data: 'File', header: true }, { data: 'Result', header: true }],
         ['foo.js', 'Pass '],
