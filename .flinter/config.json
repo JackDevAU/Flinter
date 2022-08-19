@@ -11,6 +11,11 @@
     "rules": {
         "frontmatter": [
             {
+                "field": "type",
+                "type": "text",
+                "required": true
+            },
+            {
                 "field": "title",
                 "type": "text",
                 "required": true
@@ -22,14 +27,29 @@
                 "rule": "uri.js"
             },
             {
-                "field": "authors",
-                "type": "object",
-                "rule": "authors.js"
+                "field": "related",
+                "type": "array",
+                "required": true
+            },
+            {
+                "field": "redirects",
+                "type": "array",
+                "required": true
+            },
+            {
+                "field": "created",
+                "type": "datetime",
+                "required": true
             },
             {
                 "field": "archivedreason",
                 "type": "text",
                 "required": false
+            },
+            {
+                "field": "authors",
+                "type": "object",
+                "rule": "authors.js"
             }
         ]
     }
