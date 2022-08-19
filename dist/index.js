@@ -14216,22 +14216,13 @@ async function PrintOutput(output) {
     }
 }
 async function PrintSummary(output) {
-    console.log("Printing Summary");
     core_1.summary.addHeading('Flint Results');
-    core_1.summary.addRaw('some test text');
     var tableArray = [];
     tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
-    console.log(tableArray);
     output.errors.forEach(err => {
         tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
     });
     core_1.summary.addTable(tableArray);
-    core_1.summary.addTable([
-        [{ data: 'File', header: true }, { data: 'Result', header: true }],
-        ['foo.js', 'Pass '],
-        ['bar.js', 'Fail '],
-        ['test.js', 'Pass ']
-    ]);
     await core_1.summary.write();
 }
 

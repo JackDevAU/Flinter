@@ -179,29 +179,16 @@ async function PrintOutput(output: IFlintError): Promise<void> {
 }
 
 async function PrintSummary(output: IFlintError): Promise<void> {
-  console.log("Printing Summary");
-
   summary.addHeading('Flint Results');
-
-  summary.addRaw('some test text');
 
   var tableArray = [];
 
   tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
-  console.log(tableArray);
 
   output.errors.forEach(err => {
     tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
   });
   summary.addTable(tableArray);
-
-  summary.addTable([
-    [{ data: 'File', header: true }, { data: 'Result', header: true }],
-    ['foo.js', 'Pass '],
-    ['bar.js', 'Fail '],
-    ['test.js', 'Pass ']
-  ])
-
 
   await summary.write();
 }
