@@ -93,6 +93,7 @@ async function flintCustom(
 
       if (DEBUG) {
         setFailed(`Missing directory: ${field}`);
+        setFailed(`Missing directory: ${err}`);
       }
     }
   }

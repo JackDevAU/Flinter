@@ -14318,6 +14318,7 @@ async function flintCustom(markdown, config, directories, field, fileName, front
             console.log(err);
             if (_1.DEBUG) {
                 (0, core_1.setFailed)(`Missing directory: ${field}`);
+                (0, core_1.setFailed)(`Missing directory: ${err}`);
             }
         }
     }
