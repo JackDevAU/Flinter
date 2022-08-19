@@ -14214,8 +14214,6 @@ async function PrintOutput(output) {
     console.log('ALL RESULTST');
     console.log(output);
     var errs = output.errors.filter((err) => err.result == false);
-    console.log('Errors');
-    console.log(errs);
     if (errs.length > 0) {
         (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
         for (const error of errs) {
@@ -14235,9 +14233,9 @@ async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
     var tableArray = [];
     tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
-    // output.errors.forEach(err => {
-    //   tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
-    // });
+    output.errors.forEach(err => {
+        tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
+    });
     core_1.summary.addTable(tableArray);
     await core_1.summary.write();
 }
