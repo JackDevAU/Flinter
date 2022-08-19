@@ -157,12 +157,6 @@ async function CheckMarkdownFiles(
     });
 
     for (const result of markdownResult) {
-      const { error } = result;
-      console.log(result);
-      // if (error) {
-      //   output.errors.push(result);
-      // }
-      // always add results
       output.errors.push(result);
     }
   }
@@ -181,15 +175,6 @@ async function PrintOutput(output: IFlintResults): Promise<void> {
       );
     }
   }
-  // if (output.errors.length > 0) {
-  //   setFailed(`errors found: ${output.errors.length}`);
-
-  //   for (const error of output.errors) {
-  //     setFailed(
-  //       `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
-  //     );
-  //   }
-  // }
 }
 
 async function PrintSummary(output: IFlintResults): Promise<void> {
@@ -200,14 +185,12 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
   output.errors.forEach((error: IFlinterResult) => {
     var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
 
-    if (existingItemIndex == -1) { // No file yet
+    if (existingItemIndex == -1) { // File not listed yet
       filesScanned.push({ fileName: error.fileName, success: error.result });
     } else if (!error.result) {
       filesScanned[existingItemIndex].success = false;
     }
   });
-
-  // Overall summary table
 
   var summaryTableArray = [];
   summaryTableArray.push([{ data: 'File Name', header: true }, { data: 'Result', header: true }]);
@@ -217,10 +200,6 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
   });
 
   summary.addTable(summaryTableArray);
-
-  // Done!
-
-  // Table for each file with errors
 
   summary.addHeading('File Errors', 2);
 

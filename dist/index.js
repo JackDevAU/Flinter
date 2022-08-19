@@ -14199,12 +14199,6 @@ async function CheckMarkdownFiles(files, config) {
             config,
         });
         for (const result of markdownResult) {
-            const { error } = result;
-            console.log(result);
-            // if (error) {
-            //   output.errors.push(result);
-            // }
-            // always add results
             output.errors.push(result);
         }
     }
@@ -14218,36 +14212,25 @@ async function PrintOutput(output) {
             (0, core_1.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
         }
     }
-    // if (output.errors.length > 0) {
-    //   setFailed(`errors found: ${output.errors.length}`);
-    //   for (const error of output.errors) {
-    //     setFailed(
-    //       `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
-    //     );
-    //   }
-    // }
 }
 async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
     var filesScanned = [];
     output.errors.forEach((error) => {
         var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
-        if (existingItemIndex == -1) { // No file yet
+        if (existingItemIndex == -1) { // File not listed yet
             filesScanned.push({ fileName: error.fileName, success: error.result });
         }
         else if (!error.result) {
             filesScanned[existingItemIndex].success = false;
         }
     });
-    // Overall summary table
     var summaryTableArray = [];
     summaryTableArray.push([{ data: 'File Name', header: true }, { data: 'Result', header: true }]);
     filesScanned.forEach((file) => {
         summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
     });
     core_1.summary.addTable(summaryTableArray);
-    // Done!
-    // Table for each file with errors
     core_1.summary.addHeading('File Errors', 2);
     filesScanned.filter(f => !f.success).forEach(f => {
         var tableArray = [];
