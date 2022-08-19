@@ -14193,6 +14193,8 @@ async function CheckMarkdownFiles(files, config) {
     for await (const fileName of files) {
         // Check files with valid markdown extensions only.
         const markdownData = fs.readFileSync(fileName, 'utf8'); // Read markdown content from the file.
+        console.log(config);
+        (0, core_1.notice)(`Enjoy: ${config}`);
         const markdownResult = await (0, linter_1.default)({
             markdown: markdownData,
             fileName,
