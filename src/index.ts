@@ -204,7 +204,7 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
   tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
 
   output.errors.forEach(err => {
-    tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
+    tableArray.push([err.fileName, err.result ? '✅' : '❌', 'err.error']);
   });
   summary.addTable(tableArray);
 

@@ -14234,7 +14234,7 @@ async function PrintSummary(output) {
     var tableArray = [];
     tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
     output.errors.forEach(err => {
-        tableArray.push([err.fileName, err.result ? '✅' : '❌', err.error]);
+        tableArray.push([err.fileName, err.result ? '✅' : '❌', 'err.error']);
     });
     core_1.summary.addTable(tableArray);
     await core_1.summary.write();
