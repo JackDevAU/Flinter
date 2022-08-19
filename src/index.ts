@@ -1,4 +1,4 @@
-import { setFailed, notice, getInput, getMultilineInput } from '@actions/core';
+import { setFailed, notice, getInput, getMultilineInput, summary } from '@actions/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -10,7 +10,7 @@ import getChangedFiles, { IChangedFiles } from './changedFiles';
 import initOctokit from './helpers';
 import lintFrontmatter from './linter';
 import { Config } from './types/config';
-import { IFlintError } from './types/flinter';
+import { IFlinterResult, IFlintResults } from './types/flinter';
 
 const handleError = (error: Error) => {
   console.error(error);
@@ -102,6 +102,7 @@ async function run() {
   const output = await CheckMarkdownFiles(files, config);
 
   await PrintOutput(output);
+  await PrintSummary(output);
 }
 
 process.on('unhandledRejection', handleError);
@@ -141,8 +142,8 @@ async function FindFiles(
 async function CheckMarkdownFiles(
   files: string[],
   config: Config
-): Promise<IFlintError> {
-  const output: IFlintError = {
+): Promise<IFlintResults> {
+  const output: IFlintResults = {
     errors: [],
   };
 
@@ -156,23 +157,64 @@ async function CheckMarkdownFiles(
     });
 
     for (const result of markdownResult) {
-      const { error } = result;
-      if (error) {
-        output.errors.push(result);
-      }
+      output.errors.push(result);
     }
   }
   return output;
 }
 
-async function PrintOutput(output: IFlintError): Promise<void> {
-  if (output.errors.length > 0) {
+async function PrintOutput(output: IFlintResults): Promise<void> {
+  var errs = output.errors.filter((err) => err.result == false);
+
+  if (errs.length > 0) {
     setFailed(`errors found: ${output.errors.length}`);
 
-    for (const error of output.errors) {
+    for (const error of errs) {
       setFailed(
         `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
       );
     }
   }
+}
+
+async function PrintSummary(output: IFlintResults): Promise<void> {
+  summary.addHeading('Flint Results');
+
+  var filesScanned: { fileName: string | undefined; success: boolean; }[] = [];
+
+  output.errors.forEach((error: IFlinterResult) => {
+    var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
+
+    if (existingItemIndex == -1) { // File not listed yet
+      filesScanned.push({ fileName: error.fileName, success: error.result });
+    } else if (!error.result) {
+      filesScanned[existingItemIndex].success = false;
+    }
+  });
+
+  var summaryTableArray = [];
+  summaryTableArray.push([{ data: 'File Name', header: true }, { data: 'Result', header: true }]);
+
+  filesScanned.forEach((file: { fileName: string | undefined; success: boolean; }) => {
+    summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
+  });
+
+  summary.addTable(summaryTableArray);
+
+  summary.addHeading('File Errors', 2);
+
+  filesScanned.filter(f => !f.success).forEach(f => {
+    var tableArray = [];
+    summary.addHeading(f.fileName ?? '', 3);
+
+    tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+
+    output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
+      tableArray.push(['TODO :)', err.error ?? '']);
+    });
+
+    summary.addTable(tableArray);
+  });
+
+  await summary.write();
 }
