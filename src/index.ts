@@ -187,12 +187,12 @@ async function PrintSummary(output: IFlintError): Promise<void> {
 
   var tableArray = [];
 
-  tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }]);
+  tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
   console.log(tableArray);
 
-  // output.errors.forEach(err => {
-
-  // });
+  output.errors.forEach(err => {
+    tableArray.push([err.fileName, err.result, err.error]);
+  });
   summary.addTable(tableArray);
 
   summary.addTable([
