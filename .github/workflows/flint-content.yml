@@ -1,0 +1,18 @@
+name: Flint content
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Flinter.md
+        uses: JackDevAU/Flinter@Alpha-v0.0.3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: true
