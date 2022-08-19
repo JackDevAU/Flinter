@@ -2,8 +2,8 @@ name: Flint content
 
 on:
   pull_request:
-    branches: [ "main" ]
-  
+    branches: ["main"]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Flinter.md
-        uses: JackDevAU/Flinter@Alpha-v0.0.3
+        uses: ./
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: true
