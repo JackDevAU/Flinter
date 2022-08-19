@@ -174,7 +174,7 @@ async function PrintOutput(output: IFlintResults): Promise<void> {
 
   console.log(output);
 
-  var errs = output.errors.filter((err) => { err.result == false });
+  var errs = output.errors.filter((err) => err.result == false);
 
   console.log('Errors');
   console.log(errs);

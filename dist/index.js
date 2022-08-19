@@ -14213,7 +14213,7 @@ async function CheckMarkdownFiles(files, config) {
 async function PrintOutput(output) {
     console.log('ALL RESULTST');
     console.log(output);
-    var errs = output.errors.filter((err) => { err.result == false; });
+    var errs = output.errors.filter((err) => err.result == false);
     console.log('Errors');
     console.log(errs);
     if (errs.length > 0) {
