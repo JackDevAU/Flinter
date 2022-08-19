@@ -10,7 +10,7 @@ import getChangedFiles, { IChangedFiles } from './changedFiles';
 import initOctokit from './helpers';
 import lintFrontmatter from './linter';
 import { Config } from './types/config';
-import { IFlintResults } from './types/flinter';
+import { IFlinterResult, IFlintResults } from './types/flinter';
 
 const handleError = (error: Error) => {
   console.error(error);
@@ -170,10 +170,6 @@ async function CheckMarkdownFiles(
 }
 
 async function PrintOutput(output: IFlintResults): Promise<void> {
-  console.log('ALL RESULTST');
-
-  console.log(output);
-
   var errs = output.errors.filter((err) => err.result == false);
 
   if (errs.length > 0) {
@@ -199,14 +195,40 @@ async function PrintOutput(output: IFlintResults): Promise<void> {
 async function PrintSummary(output: IFlintResults): Promise<void> {
   summary.addHeading('Flint Results');
 
-  var tableArray = [];
+  var filesScanned: { fileName: string | undefined; success: boolean; }[] = [];
 
-  tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
+  output.errors.forEach((error: IFlinterResult) => {
+    var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
 
-  output.errors.forEach(err => {
-    tableArray.push([err.fileName, err.result ? '✅' : '❌', 'err.error']);
+    if (existingItemIndex == -1) { // No file yet
+      filesScanned.push({ fileName: error.fileName, success: error.result });
+    } else if (!error.result) {
+      filesScanned[existingItemIndex].success = false;
+    }
   });
-  summary.addTable(tableArray);
+
+  // Overall summary table
+
+  var summaryTableArray = [];
+  summaryTableArray.push([{ data: 'File Name', header: true }, { data: 'Result', header: true }]);
+
+  filesScanned.forEach((file: { fileName: string | undefined; success: boolean; }) => {
+    summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
+  });
+
+  summary.addTable(summaryTableArray);
+
+  // Done!
+
+  // Table for each file with errors
+  filesScanned.filter(f => !f.success).forEach(f => {
+    var tableArray = [];
+    tableArray.push([{ data: 'File', header: true }, { data: 'Error Message', header: true }]);
+    output.errors.filter(e => e.fileName == f.fileName).forEach(err => {
+      tableArray.push([err.fileName, err.error ?? '']);
+    });
+    summary.addTable(tableArray);
+  });
 
   await summary.write();
 }

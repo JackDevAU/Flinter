@@ -14211,8 +14211,6 @@ async function CheckMarkdownFiles(files, config) {
     return output;
 }
 async function PrintOutput(output) {
-    console.log('ALL RESULTST');
-    console.log(output);
     var errs = output.errors.filter((err) => err.result == false);
     if (errs.length > 0) {
         (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
@@ -14231,12 +14229,33 @@ async function PrintOutput(output) {
 }
 async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
-    var tableArray = [];
-    tableArray.push([{ data: 'File', header: true }, { data: 'Result', header: true }, { data: 'Error', header: true }]);
-    output.errors.forEach(err => {
-        tableArray.push([err.fileName, err.result ? '✅' : '❌', 'err.error']);
+    var filesScanned = [];
+    output.errors.forEach((error) => {
+        var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
+        if (existingItemIndex == -1) { // No file yet
+            filesScanned.push({ fileName: error.fileName, success: error.result });
+        }
+        else if (!error.result) {
+            filesScanned[existingItemIndex].success = false;
+        }
     });
-    core_1.summary.addTable(tableArray);
+    // Overall summary table
+    var summaryTableArray = [];
+    summaryTableArray.push([{ data: 'File Name', header: true }, { data: 'Result', header: true }]);
+    filesScanned.forEach((file) => {
+        summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
+    });
+    core_1.summary.addTable(summaryTableArray);
+    // Done!
+    // Table for each file with errors
+    filesScanned.filter(f => !f.success).forEach(f => {
+        var tableArray = [];
+        tableArray.push([{ data: 'File', header: true }, { data: 'Error Message', header: true }]);
+        output.errors.filter(e => e.fileName == f.fileName).forEach(err => {
+            tableArray.push([err.fileName, err.error ?? '']);
+        });
+        core_1.summary.addTable(tableArray);
+    });
     await core_1.summary.write();
 }
 
