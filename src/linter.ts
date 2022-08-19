@@ -78,8 +78,6 @@ async function flintCustom(
       ] as FlinterCustomRuleSettings;
 
       const currentRule = ruleSetting.frontmatter[index];
-      console.log(ruleSetting);
-      console.log(currentRule);
 
       return await flint({
         markdown,
@@ -92,8 +90,7 @@ async function flintCustom(
       console.log(err);
 
       if (DEBUG) {
-        setFailed(`Missing directory TEST: ${field}`);
-        setFailed(`Missing directory: ${err}`);
+        setFailed(`Missing directory: ${field}`);
       }
     }
   }

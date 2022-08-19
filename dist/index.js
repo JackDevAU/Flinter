@@ -14193,8 +14193,6 @@ async function CheckMarkdownFiles(files, config) {
     for await (const fileName of files) {
         // Check files with valid markdown extensions only.
         const markdownData = fs.readFileSync(fileName, 'utf8'); // Read markdown content from the file.
-        console.log(config);
-        (0, core_1.notice)(`Enjoy: ${config}`);
         const markdownResult = await (0, linter_1.default)({
             markdown: markdownData,
             fileName,
@@ -14304,8 +14302,6 @@ async function flintCustom(markdown, config, directories, field, fileName, front
             }
             const ruleSetting = config[dir];
             const currentRule = ruleSetting.frontmatter[index];
-            console.log(ruleSetting);
-            console.log(currentRule);
             return await flint({
                 markdown,
                 config,
@@ -14317,8 +14313,7 @@ async function flintCustom(markdown, config, directories, field, fileName, front
         catch (err) {
             console.log(err);
             if (_1.DEBUG) {
-                (0, core_1.setFailed)(`Missing directory TEST: ${field}`);
-                (0, core_1.setFailed)(`Missing directory: ${err}`);
+                (0, core_1.setFailed)(`Missing directory: ${field}`);
             }
         }
     }
