@@ -14217,16 +14217,17 @@ async function PrintOutput(output) {
 }
 async function PrintSummary(output) {
     console.log("Printing Summary");
-    await core_1.summary.addHeading('Flint Results').addRaw('some test text').write();
+    core_1.summary.addHeading('Flint Results');
+    core_1.summary.addRaw('some test text');
     // output.errors.forEach(err => {
     // });
-    // summary.addTable([
-    //   [{ data: 'File', header: true }, { data: 'Result', header: true }],
-    //   ['foo.js', 'Pass '],
-    //   ['bar.js', 'Fail '],
-    //   ['test.js', 'Pass ']
-    // ])
-    // summary.write();
+    core_1.summary.addTable([
+        [{ data: 'File', header: true }, { data: 'Result', header: true }],
+        ['foo.js', 'Pass '],
+        ['bar.js', 'Fail '],
+        ['test.js', 'Pass ']
+    ]);
+    await core_1.summary.write();
 }
 
 
