@@ -6,12 +6,11 @@ export async function run(params) {
   if (!params.value) {
     return {
       result: false,
-      error: "Title is required",
+      error: 'Title is required',
     };
   }
 
-  if (params.value ) {
-    
+  if (params.value) {
   }
 
   return {

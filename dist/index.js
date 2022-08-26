@@ -14237,7 +14237,7 @@ async function PrintSummary(output) {
         core_1.summary.addHeading(f.fileName ?? '', 3);
         tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
         output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-            tableArray.push(['TODO :)', err.error ?? '']);
+            tableArray.push([err.errorLineNo, err.error ?? '']);
         });
         core_1.summary.addTable(tableArray);
     });
@@ -14331,14 +14331,21 @@ async function flintDefault(markdown, config, field, fileName, frontmatter) {
     }
 }
 const flint = async (props) => {
+    const { markdown, content } = props;
+    const { field } = content;
     const result = [];
+    var index = markdown.indexOf(field);
+    var tempString = markdown.substring(0, index);
+    var lineNumber = tempString.split('\n').length;
     // Check if the frontmatter is valid
     const fieldResult = flintField(props);
     fieldResult.fileName = props.fileName;
+    fieldResult.errorLineNo = lineNumber;
     result.push(fieldResult);
     // Check if the frontmatter value is of the correct type
     const typeResult = flintType(props);
     typeResult.fileName = props.fileName;
+    typeResult.errorLineNo = lineNumber;
     result.push(typeResult);
     // Runs a custom rule on the frontmatter
     const customRule = await flintRule(props);
@@ -14348,17 +14355,15 @@ const flint = async (props) => {
 };
 // Checks if the frontmatter contains the required field
 const flintField = (props) => {
-    const { content, rule, markdown } = props;
+    const { content, rule } = props;
     const { field } = content;
     const { required } = rule;
-    console.log(markdown);
     if (_1.DEBUG) {
         console.log(`Checking if ${field} is required`);
     }
     if (required && !content.value) {
         return {
             result: false,
-            errorLineNo: 0,
             error: `Missing required frontmatter field: ${field}`,
         };
     }
@@ -14542,12 +14547,11 @@ async function run(params) {
   if (!params.value) {
     return {
       result: false,
-      error: "Title is required",
+      error: 'Title is required',
     };
   }
 
-  if (params.value ) {
-    
+  if (params.value) {
   }
 
   return {

@@ -211,7 +211,7 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
     tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
 
     output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-      tableArray.push(['TODO :)', err.error ?? '']);
+      tableArray.push([err.errorLineNo, err.error ?? '']);
     });
 
     summary.addTable(tableArray);

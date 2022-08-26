@@ -117,16 +117,24 @@ async function flintDefault(
 }
 
 const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
+  const { markdown, content } = props;
+  const { field } = content;
   const result: IFlinterResult[] = [];
+
+  var index = markdown.indexOf(field);
+  var tempString = markdown.substring(0, index);
+  var lineNumber = tempString.split('\n').length;
 
   // Check if the frontmatter is valid
   const fieldResult = flintField(props);
   fieldResult.fileName = props.fileName;
+  fieldResult.errorLineNo = lineNumber;
   result.push(fieldResult);
 
   // Check if the frontmatter value is of the correct type
   const typeResult = flintType(props);
   typeResult.fileName = props.fileName;
+  typeResult.errorLineNo = lineNumber;
   result.push(typeResult);
 
   // Runs a custom rule on the frontmatter
@@ -139,11 +147,9 @@ const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
 
 // Checks if the frontmatter contains the required field
 const flintField = (props: IFlinter): IFlinterResult => {
-  const { content, rule, markdown } = props;
+  const { content, rule } = props;
   const { field } = content;
   const { required } = rule;
-  console.log(markdown);
-
 
   if (DEBUG) {
     console.log(`Checking if ${field} is required`);
@@ -152,7 +158,6 @@ const flintField = (props: IFlinter): IFlinterResult => {
   if (required && !content.value) {
     return {
       result: false,
-      errorLineNo: 0,
       error: `Missing required frontmatter field: ${field}`,
     };
   }
