@@ -122,8 +122,16 @@ const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
   const result: IFlinterResult[] = [];
 
   var index = markdown.indexOf(field);
+  console.log('index: ');
+  console.log(index);
+
   var tempString = markdown.substring(0, index);
+  console.log('tempString: ');
+  console.log(tempString);
+
   var lineNumber = tempString.split('\n').length;
+  console.log('lineNumber: ');
+  console.log(lineNumber);
 
   // Check if the frontmatter is valid
   const fieldResult = flintField(props);
