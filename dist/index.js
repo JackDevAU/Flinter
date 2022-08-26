@@ -14384,13 +14384,18 @@ const flintRule = async (props) => {
     if (_1.DEBUG) {
         console.log(`Running custom rule ${ruleName}`);
     }
-    if (ruleName) {
-        const { run } = await Promise.resolve().then(() => require(`../.flinter/linters/${ruleName}`));
-        const { result, error } = await run(content);
-        return {
-            result,
-            error,
-        };
+    try {
+        if (ruleName) {
+            const { run } = await Promise.resolve().then(() => require(`../.flinter/linters/${ruleName}`));
+            const { result, error } = await run(content);
+            return {
+                result,
+                error,
+            };
+        }
+    }
+    catch (error) {
+        (0, core_1.setFailed)(`${error}`);
     }
     return {
         result: true,
