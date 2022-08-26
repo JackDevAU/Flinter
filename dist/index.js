@@ -14261,17 +14261,15 @@ const _1 = __nccwpck_require__(6144);
 // TODO: Clean this step up...
 const lintFrontmatter = async ({ markdown, config, fileName, }) => {
     const output = [];
-    let index = 0;
     try {
         const frontmatter = matter(markdown).data;
-        console.log(frontmatter);
         if (frontmatter) {
             for (const field in frontmatter) {
                 if (_1.DEBUG) {
                     (0, core_1.notice)(`Flinting frontmatter ${field} in ${fileName}`);
                 }
                 if (config.defaults.directories) {
-                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter, index);
+                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter);
                     if (res) {
                         output.push(...res);
                     }
@@ -14282,7 +14280,6 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
                         output.push(...res);
                     }
                 }
-                index += 1;
             }
         }
     }
@@ -14293,14 +14290,14 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
     }
     return output;
 };
-async function flintCustom(markdown, config, directories, field, fileName, frontmatter, index) {
+async function flintCustom(markdown, config, directories, field, fileName, frontmatter) {
     for (const dir of directories) {
         try {
             if (_1.DEBUG) {
                 console.log(`Checking ${dir}/${field}`);
             }
             const ruleSetting = config[dir];
-            const currentRule = ruleSetting.frontmatter[index];
+            const currentRule = ruleSetting.frontmatter.find(f => f.field == field) ?? ruleSetting.frontmatter[0];
             return await flint({
                 markdown,
                 config,

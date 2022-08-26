@@ -11,11 +11,8 @@ const lintFrontmatter = async ({
   fileName,
 }: IFlinterProps): Promise<IFlinterResult[]> => {
   const output: IFlinterResult[] = [];
-  let index = 0;
   try {
     const frontmatter = matter(markdown).data;
-    console.log(frontmatter);
-
 
     if (frontmatter) {
       for (const field in frontmatter) {
@@ -30,7 +27,6 @@ const lintFrontmatter = async ({
             field,
             fileName,
             frontmatter,
-            index
           );
 
           if (res) {
@@ -48,7 +44,6 @@ const lintFrontmatter = async ({
             output.push(...res);
           }
         }
-        index += 1;
       }
     }
   } catch (e) {
@@ -66,8 +61,7 @@ async function flintCustom(
   directories: string[],
   field: string,
   fileName: string,
-  frontmatter: { [key: string]: any },
-  index: number
+  frontmatter: { [key: string]: any }
 ): Promise<IFlinterResult[] | undefined> {
   for (const dir of directories) {
     try {
@@ -79,7 +73,7 @@ async function flintCustom(
         dir as keyof Config
       ] as FlinterCustomRuleSettings;
 
-      const currentRule = ruleSetting.frontmatter[index];
+      const currentRule = ruleSetting.frontmatter.find(f => f.field == field) ?? ruleSetting.frontmatter[0];
 
       return await flint({
         markdown,
