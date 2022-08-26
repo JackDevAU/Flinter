@@ -3,6 +3,8 @@ name: Flint content
 on:
   pull_request:
     branches: ["main"]
+  pull_request_target:
+    branches: ["main"]
 
 jobs:
   build:
