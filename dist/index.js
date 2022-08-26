@@ -14188,7 +14188,7 @@ async function FindFiles(changedFiles, directory, markdownExtensions) {
 }
 async function CheckMarkdownFiles(files, config) {
     const output = {
-        errors: [],
+        results: [],
     };
     for await (const fileName of files) {
         // Check files with valid markdown extensions only.
@@ -14199,16 +14199,16 @@ async function CheckMarkdownFiles(files, config) {
             config,
         });
         for (const result of markdownResult) {
-            output.errors.push(result);
+            output.results.push(result);
         }
     }
     return output;
 }
 async function PrintOutput(output) {
-    var errs = output.errors.filter((err) => err.result == false);
-    if (errs.length > 0) {
-        (0, core_1.setFailed)(`errors found: ${output.errors.length}`);
-        for (const error of errs) {
+    var errors = output.results.filter((err) => err.result == false);
+    if (errors.length > 0) {
+        (0, core_1.setFailed)(`errors found: ${errors.length}`);
+        for (const error of errors) {
             (0, core_1.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
         }
     }
@@ -14216,7 +14216,7 @@ async function PrintOutput(output) {
 async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
     var filesScanned = [];
-    output.errors.forEach((error) => {
+    output.results.forEach((error) => {
         var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
         if (existingItemIndex == -1) { // File not listed yet
             filesScanned.push({ fileName: error.fileName, success: error.result });
@@ -14231,14 +14231,13 @@ async function PrintSummary(output) {
         summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
     });
     core_1.summary.addTable(summaryTableArray);
-    core_1.summary.addHeading('File Errors', 2);
+    var errorCount = output.results.filter((err) => err.result == false).length;
+    core_1.summary.addHeading(`File Errors - ${errorCount}`, 2);
     filesScanned.filter(f => !f.success).forEach(f => {
         var tableArray = [];
         core_1.summary.addHeading(f.fileName ?? '', 3);
-        tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
-        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-            tableArray.push(['TODO :)', err.error ?? '']);
-        });
+        tableArray.push([{ data: 'Field', header: true }, { data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+        output.results.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? '']));
         core_1.summary.addTable(tableArray);
     });
     await core_1.summary.write();
@@ -14258,7 +14257,6 @@ const _1 = __nccwpck_require__(6144);
 // TODO: Clean this step up...
 const lintFrontmatter = async ({ markdown, config, fileName, }) => {
     const output = [];
-    let index = 0;
     try {
         const frontmatter = matter(markdown).data;
         if (frontmatter) {
@@ -14267,7 +14265,7 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
                     (0, core_1.notice)(`Flinting frontmatter ${field} in ${fileName}`);
                 }
                 if (config.defaults.directories) {
-                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter, index);
+                    const res = await flintCustom(markdown, config, config.defaults.directories, field, fileName, frontmatter);
                     if (res) {
                         output.push(...res);
                     }
@@ -14278,7 +14276,6 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
                         output.push(...res);
                     }
                 }
-                index += 1;
             }
         }
     }
@@ -14289,14 +14286,14 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
     }
     return output;
 };
-async function flintCustom(markdown, config, directories, field, fileName, frontmatter, index) {
+async function flintCustom(markdown, config, directories, field, fileName, frontmatter) {
     for (const dir of directories) {
         try {
             if (_1.DEBUG) {
                 console.log(`Checking ${dir}/${field}`);
             }
             const ruleSetting = config[dir];
-            const currentRule = ruleSetting.frontmatter[index];
+            const currentRule = ruleSetting.frontmatter.find(f => f.field == field) ?? ruleSetting.frontmatter[0];
             return await flint({
                 markdown,
                 config,
@@ -14324,18 +14321,29 @@ async function flintDefault(markdown, config, field, fileName, frontmatter) {
     }
 }
 const flint = async (props) => {
+    const { markdown, content } = props;
+    const { field } = content;
     const result = [];
+    var index = markdown.indexOf(field);
+    var tempString = markdown.substring(0, index);
+    var lineNumber = tempString.split('\n').length;
     // Check if the frontmatter is valid
     const fieldResult = flintField(props);
     fieldResult.fileName = props.fileName;
+    fieldResult.errorLineNo = lineNumber;
+    fieldResult.field = field;
     result.push(fieldResult);
     // Check if the frontmatter value is of the correct type
     const typeResult = flintType(props);
     typeResult.fileName = props.fileName;
+    typeResult.errorLineNo = lineNumber;
+    typeResult.field = field;
     result.push(typeResult);
     // Runs a custom rule on the frontmatter
     const customRule = await flintRule(props);
     customRule.fileName = props.fileName;
+    customRule.errorLineNo = lineNumber;
+    customRule.field = field;
     result.push(customRule);
     return result;
 };

@@ -144,12 +144,13 @@ async function CheckMarkdownFiles(
   config: Config
 ): Promise<IFlintResults> {
   const output: IFlintResults = {
-    errors: [],
+    results: [],
   };
 
   for await (const fileName of files) {
     // Check files with valid markdown extensions only.
     const markdownData = fs.readFileSync(fileName, 'utf8'); // Read markdown content from the file.
+
     const markdownResult = await lintFrontmatter({
       markdown: markdownData,
       fileName,
@@ -157,19 +158,19 @@ async function CheckMarkdownFiles(
     });
 
     for (const result of markdownResult) {
-      output.errors.push(result);
+      output.results.push(result);
     }
   }
   return output;
 }
 
 async function PrintOutput(output: IFlintResults): Promise<void> {
-  var errs = output.errors.filter((err) => err.result == false);
+  var errors = output.results.filter((err) => err.result == false);
 
-  if (errs.length > 0) {
-    setFailed(`errors found: ${output.errors.length}`);
+  if (errors.length > 0) {
+    setFailed(`errors found: ${errors.length}`);
 
-    for (const error of errs) {
+    for (const error of errors) {
       setFailed(
         `${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`
       );
@@ -182,7 +183,7 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
 
   var filesScanned: { fileName: string | undefined; success: boolean; }[] = [];
 
-  output.errors.forEach((error: IFlinterResult) => {
+  output.results.forEach((error: IFlinterResult) => {
     var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
 
     if (existingItemIndex == -1) { // File not listed yet
@@ -201,17 +202,18 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
 
   summary.addTable(summaryTableArray);
 
-  summary.addHeading('File Errors', 2);
+  var errorCount = output.results.filter((err) => err.result == false).length;
+  summary.addHeading(`File Errors - ${errorCount}`, 2);
 
   filesScanned.filter(f => !f.success).forEach(f => {
     var tableArray = [];
     summary.addHeading(f.fileName ?? '', 3);
 
-    tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+    tableArray.push([{ data: 'Field', header: true }, { data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
 
-    output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-      tableArray.push(['TODO :)', err.error ?? '']);
-    });
+    output.results.filter(e => e.fileName == f.fileName && !e.result).forEach(err =>
+      tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? ''])
+    );
 
     summary.addTable(tableArray);
   });

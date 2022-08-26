@@ -22,6 +22,8 @@ export interface IFlinterProps {
 export interface IFlinterResult {
   result: boolean;
   error?: string;
+  errorLineNo?: number;
+  field?: string;
   fileName?: string;
 }
 
@@ -39,5 +41,5 @@ export type FlinterRuleObject = {
 };
 
 interface IFlintResults {
-  errors: IFlinterResult[];
+  results: IFlinterResult[];
 }
