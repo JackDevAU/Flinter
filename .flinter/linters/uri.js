@@ -3,7 +3,7 @@
  * @returns {{result: boolean, error?: string}}
  */
 export async function run(params) {
-  var uriRegex = new RegExp('/^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$/g');
+  var uriRegex = new RegExp('^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$');
   console.log('Params for custom scan');
   console.log(params);
 
