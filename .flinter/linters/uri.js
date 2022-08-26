@@ -12,7 +12,6 @@ export async function run(params) {
   }
 
   var uriRegex = new RegExp('(?:($.*):)');
-  console.log(uriRegex.test(params.value));
   if (!uriRegex.test(params.value)) {
     return {
       result: false,

@@ -14266,6 +14266,7 @@ const lintFrontmatter = async ({ markdown, config, fileName, }) => {
     let index = 0;
     try {
         const frontmatter = matter(markdown).data;
+        console.log(frontmatter);
         if (frontmatter) {
             for (const field in frontmatter) {
                 if (_1.DEBUG) {
@@ -14347,15 +14348,17 @@ const flint = async (props) => {
 };
 // Checks if the frontmatter contains the required field
 const flintField = (props) => {
-    const { content, rule } = props;
+    const { content, rule, markdown } = props;
     const { field } = content;
     const { required } = rule;
+    console.log(markdown);
     if (_1.DEBUG) {
         console.log(`Checking if ${field} is required`);
     }
     if (required && !content.value) {
         return {
             result: false,
+            errorLineNo: 0,
             error: `Missing required frontmatter field: ${field}`,
         };
     }
@@ -14567,19 +14570,19 @@ __nccwpck_require__.r(__webpack_exports__);
  * @returns {{result: boolean, error?: string}}
  */
 async function run(params) {
-  console.log("TEST CUSTOM RULE");
+  console.log('TEST CUSTOM RULE');
   if (!params.value) {
     return {
       result: false,
-      error: "Uri is required",
+      error: 'Uri is required',
     };
   }
 
-  var uriRegex = new RegExp("(?:($.*):)");
+  var uriRegex = new RegExp('(?:($.*):)');
   if (!uriRegex.test(params.value)) {
     return {
       result: false,
-      error: "Uri must be kebab case",
+      error: 'Uri must be kebab case',
     };
   }
 

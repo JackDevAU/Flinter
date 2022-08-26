@@ -14,6 +14,8 @@ const lintFrontmatter = async ({
   let index = 0;
   try {
     const frontmatter = matter(markdown).data;
+    console.log(frontmatter);
+
 
     if (frontmatter) {
       for (const field in frontmatter) {
@@ -137,9 +139,11 @@ const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
 
 // Checks if the frontmatter contains the required field
 const flintField = (props: IFlinter): IFlinterResult => {
-  const { content, rule } = props;
+  const { content, rule, markdown } = props;
   const { field } = content;
   const { required } = rule;
+  console.log(markdown);
+
 
   if (DEBUG) {
     console.log(`Checking if ${field} is required`);
@@ -148,6 +152,7 @@ const flintField = (props: IFlinter): IFlinterResult => {
   if (required && !content.value) {
     return {
       result: false,
+      errorLineNo: 0,
       error: `Missing required frontmatter field: ${field}`,
     };
   }

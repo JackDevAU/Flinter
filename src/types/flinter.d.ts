@@ -22,6 +22,7 @@ export interface IFlinterProps {
 export interface IFlinterResult {
   result: boolean;
   error?: string;
+  errorLineNo?: number;
   fileName?: string;
 }
 
