@@ -14188,7 +14188,7 @@ async function FindFiles(changedFiles, directory, markdownExtensions) {
 }
 async function CheckMarkdownFiles(files, config) {
     const output = {
-        errors: [],
+        results: [],
     };
     for await (const fileName of files) {
         // Check files with valid markdown extensions only.
@@ -14199,16 +14199,16 @@ async function CheckMarkdownFiles(files, config) {
             config,
         });
         for (const result of markdownResult) {
-            output.errors.push(result);
+            output.results.push(result);
         }
     }
     return output;
 }
 async function PrintOutput(output) {
-    var errs = output.errors.filter((err) => err.result == false);
-    if (errs.length > 0) {
-        (0, core_1.setFailed)(`errors found: ${errs.length}`);
-        for (const error of errs) {
+    var errors = output.results.filter((err) => err.result == false);
+    if (errors.length > 0) {
+        (0, core_1.setFailed)(`errors found: ${errors.length}`);
+        for (const error of errors) {
             (0, core_1.setFailed)(`${error.error} ${error?.fileName ? `in file ${error?.fileName}` : ''}`);
         }
     }
@@ -14216,7 +14216,7 @@ async function PrintOutput(output) {
 async function PrintSummary(output) {
     core_1.summary.addHeading('Flint Results');
     var filesScanned = [];
-    output.errors.forEach((error) => {
+    output.results.forEach((error) => {
         var existingItemIndex = filesScanned.map(f => f.fileName).indexOf(error.fileName);
         if (existingItemIndex == -1) { // File not listed yet
             filesScanned.push({ fileName: error.fileName, success: error.result });
@@ -14231,12 +14231,13 @@ async function PrintSummary(output) {
         summaryTableArray.push([file.fileName, file.success ? '✅' : '❌']);
     });
     core_1.summary.addTable(summaryTableArray);
-    core_1.summary.addHeading('File Errors', 2);
+    var errorCount = output.results.filter((err) => err.result == false).length;
+    core_1.summary.addHeading(`File Errors - ${errorCount}`, 2);
     filesScanned.filter(f => !f.success).forEach(f => {
         var tableArray = [];
         core_1.summary.addHeading(f.fileName ?? '', 3);
         tableArray.push([{ data: 'Field', header: true }, { data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
-        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? '']));
+        output.results.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? '']));
         core_1.summary.addTable(tableArray);
     });
     await core_1.summary.write();

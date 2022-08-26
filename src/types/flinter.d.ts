@@ -41,5 +41,5 @@ export type FlinterRuleObject = {
 };
 
 interface IFlintResults {
-  errors: IFlinterResult[];
+  results: IFlinterResult[];
 }
