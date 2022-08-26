@@ -1,27 +1,24 @@
 ---
 type: rule
 title: Do you know the 8 Steps to Scrum?
-uri: 8-steps-to-scrum test
+uri: 8-steps-to-scrum
 related: []
 redirects:
-- do-you-know-the-8-steps-to-scrum
+  - do-you-know-the-8-steps-to-scrum
 created: 2013-06-28T03:50:10.000Z
 archivedreason: null
 guid: 5759f753-1524-4803-869c-8b881eae28a1
 authors:
-  - title: Adam Cogan 
+  - title: Adam Cogan
     url: https://ssw.com.au/people/adam-cogan
   - title: Gerard Beckerleg
     url: https://ssw.com.au/people/gerard-beckerleg
-
 ---
-
-
-
 
 Scrum is easier than it seems, we'll explain how in these 8 simple steps.
 
 test
+
 <!--endintro-->
 
 ::: good
@@ -36,7 +33,7 @@ In the Initial Meeting, the Product Owner explains the product vision. The Devel
 
 ### 2. [Backlog Construction](/product-owner-do-you-know-how-to-update-the-backlog)
 
-The next step is Backlog Construction, also known as a Specification Review. The Developers propose a high-level software architecture and a to-do list called the Product Backlog. The required features are broken down into Product Backlog Items (PBIs for short). 
+The next step is Backlog Construction, also known as a Specification Review. The Developers propose a high-level software architecture and a to-do list called the Product Backlog. The required features are broken down into Product Backlog Items (PBIs for short).
 
 These PBIs are estimated and, before a dollar figure is presented, a buffer is added for generic tasks such as DevOps, Testing, Bug Fixes, Project Management, etc.
 
@@ -46,7 +43,7 @@ A quick note, there are only 3 roles in a Scrum Team, The Product Owner (the bos
 
 ### 3. [Sprint Planning](/do-you-know-what-happens-at-a-sprint-planning-meeting)
 
-The Sprint Planning session is for the Developers to focus on the subset of the Product Backlog that they think they can complete in the next Sprint, (which is most commonly a 2-week time-box). 
+The Sprint Planning session is for the Developers to focus on the subset of the Product Backlog that they think they can complete in the next Sprint, (which is most commonly a 2-week time-box).
 
 The Product Owner puts the PBIs into priority order and makes sure the top ones have enough detail to be worked on. The Developers then pulls PBIs from the top of the Backlog and commits to delivering as much as they forecast they can, in the coming Sprint.
 

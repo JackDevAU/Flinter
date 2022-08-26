@@ -3,14 +3,6 @@
  * @returns {{result: boolean, error?: string}}
  */
 export async function run(params) {
-  console.log('TEST CUSTOM RULE');
-  if (!params.value) {
-    return {
-      result: false,
-      error: 'Uri is required',
-    };
-  }
-
   var uriRegex = new RegExp('(?:($.*):)');
   if (!uriRegex.test(params.value)) {
     return {
