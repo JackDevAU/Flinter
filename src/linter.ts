@@ -131,18 +131,21 @@ const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
   const fieldResult = flintField(props);
   fieldResult.fileName = props.fileName;
   fieldResult.errorLineNo = lineNumber;
+  fieldResult.field = field;
   result.push(fieldResult);
 
   // Check if the frontmatter value is of the correct type
   const typeResult = flintType(props);
   typeResult.fileName = props.fileName;
   typeResult.errorLineNo = lineNumber;
+  typeResult.field = field;
   result.push(typeResult);
 
   // Runs a custom rule on the frontmatter
   const customRule = await flintRule(props);
   customRule.fileName = props.fileName;
   customRule.errorLineNo = lineNumber;
+  customRule.field = field;
   result.push(customRule);
 
   return result;

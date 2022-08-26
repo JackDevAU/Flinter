@@ -208,10 +208,10 @@ async function PrintSummary(output: IFlintResults): Promise<void> {
     var tableArray = [];
     summary.addHeading(f.fileName ?? '', 3);
 
-    tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+    tableArray.push([{ data: 'Field', header: true }, { data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
 
     output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err =>
-      tableArray.push([err.errorLineNo?.toString(), err.error ?? ''])
+      tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? ''])
     );
 
     summary.addTable(tableArray);

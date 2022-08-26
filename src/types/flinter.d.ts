@@ -23,6 +23,7 @@ export interface IFlinterResult {
   result: boolean;
   error?: string;
   errorLineNo?: number;
+  field?: string;
   fileName?: string;
 }
 

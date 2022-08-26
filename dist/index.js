@@ -14235,8 +14235,8 @@ async function PrintSummary(output) {
     filesScanned.filter(f => !f.success).forEach(f => {
         var tableArray = [];
         core_1.summary.addHeading(f.fileName ?? '', 3);
-        tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
-        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.errorLineNo?.toString(), err.error ?? '']));
+        tableArray.push([{ data: 'Field', header: true }, { data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
+        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.field, err.errorLineNo?.toString(), err.error ?? '']));
         core_1.summary.addTable(tableArray);
     });
     await core_1.summary.write();
@@ -14342,16 +14342,19 @@ const flint = async (props) => {
     const fieldResult = flintField(props);
     fieldResult.fileName = props.fileName;
     fieldResult.errorLineNo = lineNumber;
+    fieldResult.field = field;
     result.push(fieldResult);
     // Check if the frontmatter value is of the correct type
     const typeResult = flintType(props);
     typeResult.fileName = props.fileName;
     typeResult.errorLineNo = lineNumber;
+    typeResult.field = field;
     result.push(typeResult);
     // Runs a custom rule on the frontmatter
     const customRule = await flintRule(props);
     customRule.fileName = props.fileName;
     customRule.errorLineNo = lineNumber;
+    customRule.field = field;
     result.push(customRule);
     return result;
 };
@@ -14577,6 +14580,9 @@ __nccwpck_require__.r(__webpack_exports__);
  */
 async function run(params) {
   var uriRegex = new RegExp('(?:($.*):)');
+  console.log('Params for custom scan');
+  console.log(params);
+
   if (!uriRegex.test(params.value)) {
     return {
       result: false,
