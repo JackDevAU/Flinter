@@ -168,7 +168,7 @@ async function PrintOutput(output: IFlintResults): Promise<void> {
   var errs = output.errors.filter((err) => err.result == false);
 
   if (errs.length > 0) {
-    setFailed(`errors found: ${output.errors.length}`);
+    setFailed(`errors found: ${errs.length}`);
 
     for (const error of errs) {
       setFailed(
