@@ -14237,7 +14237,7 @@ async function PrintSummary(output) {
         core_1.summary.addHeading(f.fileName ?? '', 3);
         tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
         output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-            tableArray.push([err.errorLineNo, err.error ?? '']);
+            tableArray.push([`${err.errorLineNo}`, err.error ?? '']);
         });
         core_1.summary.addTable(tableArray);
     });
