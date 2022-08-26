@@ -11,7 +11,6 @@ const lintFrontmatter = async ({
   fileName,
 }: IFlinterProps): Promise<IFlinterResult[]> => {
   const output: IFlinterResult[] = [];
-  let index = 0;
   try {
     const frontmatter = matter(markdown).data;
 
@@ -28,7 +27,6 @@ const lintFrontmatter = async ({
             field,
             fileName,
             frontmatter,
-            index
           );
 
           if (res) {
@@ -46,7 +44,6 @@ const lintFrontmatter = async ({
             output.push(...res);
           }
         }
-        index += 1;
       }
     }
   } catch (e) {
@@ -64,8 +61,7 @@ async function flintCustom(
   directories: string[],
   field: string,
   fileName: string,
-  frontmatter: { [key: string]: any },
-  index: number
+  frontmatter: { [key: string]: any }
 ): Promise<IFlinterResult[] | undefined> {
   for (const dir of directories) {
     try {
@@ -77,7 +73,8 @@ async function flintCustom(
         dir as keyof Config
       ] as FlinterCustomRuleSettings;
 
-      const currentRule = ruleSetting.frontmatter[index];
+      const currentRule = ruleSetting.frontmatter.find(f => f.field == field) ?? ruleSetting.frontmatter[0];
+
       return await flint({
         markdown,
         config,
@@ -112,21 +109,33 @@ async function flintDefault(
 }
 
 const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
+  const { markdown, content } = props;
+  const { field } = content;
   const result: IFlinterResult[] = [];
+
+  var index = markdown.indexOf(field);
+  var tempString = markdown.substring(0, index);
+  var lineNumber = tempString.split('\n').length;
 
   // Check if the frontmatter is valid
   const fieldResult = flintField(props);
   fieldResult.fileName = props.fileName;
+  fieldResult.errorLineNo = lineNumber;
+  fieldResult.field = field;
   result.push(fieldResult);
 
   // Check if the frontmatter value is of the correct type
   const typeResult = flintType(props);
   typeResult.fileName = props.fileName;
+  typeResult.errorLineNo = lineNumber;
+  typeResult.field = field;
   result.push(typeResult);
 
   // Runs a custom rule on the frontmatter
   const customRule = await flintRule(props);
   customRule.fileName = props.fileName;
+  customRule.errorLineNo = lineNumber;
+  customRule.field = field;
   result.push(customRule);
 
   return result;
