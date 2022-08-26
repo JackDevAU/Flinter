@@ -14236,9 +14236,7 @@ async function PrintSummary(output) {
         var tableArray = [];
         core_1.summary.addHeading(f.fileName ?? '', 3);
         tableArray.push([{ data: 'Line Number', header: true }, { data: 'Error Message', header: true }]);
-        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => {
-            tableArray.push([`${err.errorLineNo}`, err.error ?? '']);
-        });
+        output.errors.filter(e => e.fileName == f.fileName && !e.result).forEach(err => tableArray.push([err.errorLineNo?.toString(), err.error ?? '']));
         core_1.summary.addTable(tableArray);
     });
     await core_1.summary.write();
@@ -14350,6 +14348,7 @@ const flint = async (props) => {
     // Runs a custom rule on the frontmatter
     const customRule = await flintRule(props);
     customRule.fileName = props.fileName;
+    customRule.errorLineNo = lineNumber;
     result.push(customRule);
     return result;
 };

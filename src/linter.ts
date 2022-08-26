@@ -140,6 +140,7 @@ const flint = async (props: IFlinter): Promise<IFlinterResult[]> => {
   // Runs a custom rule on the frontmatter
   const customRule = await flintRule(props);
   customRule.fileName = props.fileName;
+  customRule.errorLineNo = lineNumber;
   result.push(customRule);
 
   return result;
