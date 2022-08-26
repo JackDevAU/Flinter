@@ -14307,7 +14307,6 @@ async function flintCustom(markdown, config, directories, field, fileName, front
             });
         }
         catch (err) {
-            console.log(err);
             if (_1.DEBUG) {
                 (0, core_1.setFailed)(`Missing directory: ${field}`);
             }
@@ -14330,14 +14329,8 @@ const flint = async (props) => {
     const { field } = content;
     const result = [];
     var index = markdown.indexOf(field);
-    console.log('index: ');
-    console.log(index);
     var tempString = markdown.substring(0, index);
-    console.log('tempString: ');
-    console.log(tempString);
     var lineNumber = tempString.split('\n').length;
-    console.log('lineNumber: ');
-    console.log(lineNumber);
     // Check if the frontmatter is valid
     const fieldResult = flintField(props);
     fieldResult.fileName = props.fileName;
@@ -14580,10 +14573,6 @@ __nccwpck_require__.r(__webpack_exports__);
  */
 async function run(params) {
   var uriRegex = new RegExp('^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$');
-  console.log('Params for custom scan');
-  console.log(params);
-
-  console.log(uriRegex.test(params.value));
 
   if (!uriRegex.test(params.value)) {
     return {
