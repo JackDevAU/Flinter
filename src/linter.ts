@@ -187,15 +187,20 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
     console.log(`Running custom rule ${ruleName}`);
   }
 
-  if (ruleName) {
-    const { run } = await import(`../.flinter/linters/${ruleName}`);
+  try {
+    if (ruleName) {
+      const { run } = await import(`../.flinter/linters/${ruleName}`);
 
-    const { result, error }: IFlinterResult = await run(content);
-    return {
-      result,
-      error,
-    };
+      const { result, error }: IFlinterResult = await run(content);
+      return {
+        result,
+        error,
+      };
+    }
+  } catch (error) {
+    setFailed(`${error}`);
   }
+
   return {
     result: true,
   };
