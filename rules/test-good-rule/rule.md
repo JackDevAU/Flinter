@@ -2,7 +2,6 @@
 type: rule
 title: Do you replace the 404 error with a useful error page?
 archivedreason:
-guid: a006213a-e97b-46a7-a66b-beb52b205533
 uri: 404-useful-error-page
 created: 2016-08-11T17:30:01.0000000Z
 authors:
