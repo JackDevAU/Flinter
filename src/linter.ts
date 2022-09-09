@@ -189,7 +189,9 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
 
   try {
     if (ruleName) {
-      const { run } = await import(`${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`);
+      const rulePath = `${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`;
+      console.log(rulePath);
+      const { run } = await import(rulePath);
 
       const { result, error }: IFlinterResult = await run(content);
       return {
