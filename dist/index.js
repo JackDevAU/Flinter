@@ -14387,11 +14387,12 @@ const flintRule = async (props) => {
     try {
         if (ruleName) {
             var fs = __nccwpck_require__(7147);
-            var files = fs.readdirSync(process.env.GITHUB_WORKSPACE);
+            var files = fs.readdirSync(`${process.env.GITHUB_WORKSPACE}/.flinter/linters/`);
             console.log(files);
             const rulePath = `${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`;
             console.log(rulePath);
             const { run } = await Promise.resolve().then(() => require(rulePath));
+            console.log(run);
             const { result, error } = await run(content);
             return {
                 result,
