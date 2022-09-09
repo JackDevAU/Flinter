@@ -189,17 +189,12 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
 
   try {
     if (ruleName) {
-      var fs = require('fs');
-      var files = fs.readdirSync(`${process.env.GITHUB_WORKSPACE}/.flinter/linters/`);
-      console.log(files);
-
       const rulePath = `${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`;
-      console.log(rulePath);
-
-      const content = fs.readFileSync(rulePath, 'utf8');
-      console.log(content);
 
       const { run } = await import(rulePath);
+      import(rulePath)
+        .then(obj => obj())
+        .catch(err => console.error(err));
 
       const { result, error }: IFlinterResult = await run(content);
       return {
@@ -208,7 +203,7 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
       };
     }
   } catch (error) {
-    setFailed(`Could not run custom rule: ${error}`);
+    setFailed(`Could not read custom rule: ${error}`);
   }
 
   return {

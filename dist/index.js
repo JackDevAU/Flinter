@@ -14386,14 +14386,10 @@ const flintRule = async (props) => {
     }
     try {
         if (ruleName) {
-            var fs = __nccwpck_require__(7147);
-            var files = fs.readdirSync(`${process.env.GITHUB_WORKSPACE}/.flinter/linters/`);
-            console.log(files);
             const rulePath = `${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`;
-            console.log(rulePath);
-            const content = fs.readFileSync(rulePath, 'utf8');
-            console.log(content);
             const { run } = await Promise.resolve().then(() => require(rulePath));
+            Promise.resolve().then(() => require(rulePath)).then(obj => obj())
+                .catch(err => console.error(err));
             const { result, error } = await run(content);
             return {
                 result,
@@ -14402,7 +14398,7 @@ const flintRule = async (props) => {
         }
     }
     catch (error) {
-        (0, core_1.setFailed)(`Could not run custom rule: ${error}`);
+        (0, core_1.setFailed)(`Could not read custom rule: ${error}`);
     }
     return {
         result: true,
