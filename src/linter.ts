@@ -198,7 +198,7 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
       };
     }
   } catch (error) {
-    setFailed(`${error}`);
+    setFailed(`Could not run custom rule: ${error}`);
   }
 
   return {

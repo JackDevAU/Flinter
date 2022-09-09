@@ -14395,7 +14395,7 @@ const flintRule = async (props) => {
         }
     }
     catch (error) {
-        (0, core_1.setFailed)(`${error}`);
+        (0, core_1.setFailed)(`Could not run custom rule: ${error}`);
     }
     return {
         result: true,
