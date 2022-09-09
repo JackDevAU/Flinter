@@ -194,10 +194,12 @@ const flintRule = async (props: IFlinter): Promise<IFlinterResult> => {
       console.log(files);
 
       const rulePath = `${process.env.GITHUB_WORKSPACE}/.flinter/linters/${ruleName}`;
-
       console.log(rulePath);
+
+      const content = fs.readFileSync(rulePath, 'utf8');
+      console.log(content);
+
       const { run } = await import(rulePath);
-      console.log(run);
 
       const { result, error }: IFlinterResult = await run(content);
       return {
